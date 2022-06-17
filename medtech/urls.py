@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('users.urls')),
     path('', RegisterView.as_view()),
+    path('sc', include('checklist.urls'))
 ]
 
 urlpatterns += doc_url

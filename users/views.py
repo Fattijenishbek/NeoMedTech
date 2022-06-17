@@ -31,13 +31,12 @@ class LoginView(generics.GenericAPIView):
     def post(self, request):
         phone = request.data["phone"]
         password = request.data["password"]
-
-        user = User.objects.filter(phone=phone).first()
-
+        print(password)
+        user = User.objects.get(phone=phone)
         if user is None:
             raise AuthenticationFailed("User not found!")
 
-        if not user.check_password(password):
+        if password != user.password:
             raise AuthenticationFailed("Incorrect password!")
 
         refresh = RefreshToken.for_user(user)
