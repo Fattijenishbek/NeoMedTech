@@ -23,8 +23,8 @@ from .yasg import urlpatterns as doc_url
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('users.urls')),
-    path('', RegisterView.as_view()),
-    path('sc', include('checklist.urls'))
+    path('', include('checklist.urls')),
+    path('', include('handbook.urls')),
 ]
 
 urlpatterns += doc_url

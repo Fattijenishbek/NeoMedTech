@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users',
     'drf_yasg',
     'checklist',
+    'handbook',
 ]
 
 MIDDLEWARE = [
