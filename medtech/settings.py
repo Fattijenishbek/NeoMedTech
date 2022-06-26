@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     'users',
     'drf_yasg',
+    'checklist',
+    'handbook',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +85,11 @@ WSGI_APPLICATION = 'medtech.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'PORT': config('DB_PORT'),
+        'HOST': config('DB_HOST'),
     }
 }
 
@@ -167,3 +173,11 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+

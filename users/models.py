@@ -3,19 +3,14 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import (
-    AbstractUser,
+    AbstractBaseUser,
     BaseUserManager,
+    PermissionsMixin,
 )
 
 
 class SuperUser(BaseUserManager):
     def create_user(self, username, phone, password, **extra_fields):
-        if not username:
-            raise ValueError("User must have username")
-        if not phone:
-            raise ValueError("User must have phone number")
-        if not password:
-            raise ValueError("You need to come up with a password")
         user = self.model(
             username=username,
             phone=phone,
@@ -39,34 +34,39 @@ class SuperUser(BaseUserManager):
         return user
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser, PermissionsMixin):
     user_type_choices = [
         ('doctor', 'doctor'),
         ('patient', 'patient'),
         ('office_manager', 'office_manager'),
         ('admin', 'admin'),
     ]
-
-    username = models.CharField(max_length=50, unique=True)
-    first_name = models.CharField(max_length=100, null=True, blank=True)
-    last_name = models.CharField(max_length=100, null=True, blank=True)
-    birth_date = models.DateField(null=True, blank=True)
-    email = models.EmailField(unique=True, null=True, blank=True)
-    phone = models.CharField(max_length=100, unique=True)
-    password = models.CharField(max_length=100, null=True, blank=True)
+    username = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
+    birth_date = models.DateField(null=True, blank=True)
     user_type = models.CharField(max_length=255, choices=user_type_choices, default='patient', null=True)
-    address = models.CharField(max_length=100, null=True, blank=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True, unique=True)
+
 
     USERNAME_FIELD = "phone"
+
     REQUIRED_FIELDS = ["username"]
 
     objects = SuperUser()
 
     def __str__(self):
         return self.username
+
+
+    class Meta:
+        verbose_name = 'System user'
+        verbose_name_plural = "System users"
 
 
 class Patient(models.Model):

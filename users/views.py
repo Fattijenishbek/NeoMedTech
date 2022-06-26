@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import generics, status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
@@ -29,11 +30,11 @@ class LoginView(generics.GenericAPIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+        #email = request.data['email']
         phone = request.data["phone"]
         password = request.data["password"]
 
         user = User.objects.filter(phone=phone).first()
-
         if user is None:
             raise AuthenticationFailed("User not found!")
 
