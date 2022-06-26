@@ -1,1 +1,1 @@
-web: gunicorn medtech.wsgi --log-file -
+web: gunicorn medtech.wsgi:application
