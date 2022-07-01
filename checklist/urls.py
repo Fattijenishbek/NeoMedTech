@@ -8,13 +8,13 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 
-router = DefaultRouter()
+router1 = DefaultRouter()
 
-router.register(r'answer', views.AnswerView)
-router.register(r'question', views.QuestionView)
-router.register(r'med-card', views.MedCardView)
-router.register(r'check-list', views.CheckListView)
+router1.register(r'answer', views.AnswerView)
+router1.register(r'question', views.QuestionView)
+router1.register(r'med-card', views.MedCardView)
+router1.register(r'check-list', views.CheckListView)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router1.urls))
 ]
