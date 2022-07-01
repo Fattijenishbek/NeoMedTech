@@ -25,8 +25,19 @@ class MedCardSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class QuestionAnswerSerializer(serializers.ModelSerializer):
+    question = serializers.StringRelatedField()
+    class Meta:
+        model = models.Answer
+        fields = ['answer', 'question']
+
+
 class MedCardListSerializer(MedCardSerializer):
-    question = serializers.StringRelatedField(many=True)
+    answer = QuestionAnswerSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = models.MedCard
+        fields = '__all__'
 
 
 class CheckListSerializer(serializers.ModelSerializer):

@@ -11,17 +11,18 @@ class Question(models.Model):
 
 class Answer(models.Model):
     answer = models.CharField(max_length=256)
-    comment = models.TextField(blank=True)
     is_ok = models.BooleanField(default=False)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.answer
+        return f'{self.answer} - {self.question}'
 
 
 class MedCard(models.Model):
-    question = models.ManyToManyField(Question)
+    answer = models.ManyToManyField(Answer)
+    recommendation = models.TextField(blank=True)
+    note = models.TextField(blank=True)
 
 
 class CheckList(models.Model):
