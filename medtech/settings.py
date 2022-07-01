@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY') #'django-insecure-w=$38q@9d9c+z*0*5$)+is&-s%m_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ['neomedtech.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['neomedtech.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -97,6 +97,13 @@ DATABASES = {
         'HOST': config('DB_HOST'),
     }
 }
+
+# DATABASES = {
+# 'default': {
+# 'ENGINE': 'django.db.backends.sqlite3',
+# 'NAME': BASE_DIR/'db.sqlite3',
+# }
+# }
 
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)

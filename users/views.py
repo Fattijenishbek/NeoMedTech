@@ -7,7 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import User
 from users.serializers import (
-    LoginSerializer,
+    LoginMobileSerializer,
+    LoginWebSerializer,
     RegisterSerializer,
 
 )
@@ -25,13 +26,42 @@ class RegisterView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(generics.GenericAPIView):
-    serializer_class = LoginSerializer
+class LoginWebView(generics.GenericAPIView):
+    serializer_class = LoginWebSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        #email = request.data['email']
-        phone = request.data["phone"]
+        email = request.data['email']
+        password = request.data["password"]
+
+        user = User.objects.filter(email=email).first()
+        if user is None:
+            raise AuthenticationFailed("User not found!")
+
+        if not user.check_password(password):
+            raise AuthenticationFailed("Incorrect password!")
+
+        refresh = RefreshToken.for_user(user)
+
+        is_superuser = user.is_superuser
+        user_type = user.user_type
+
+        return Response(
+            {
+                "status": "You successfully logged in",
+                "is_superuser": is_superuser,
+                "user_type": user_type,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+        )
+
+class LoginMobileView(generics.GenericAPIView):
+    serializer_class = LoginMobileSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        phone = request.data['phone']
         password = request.data["password"]
 
         user = User.objects.filter(phone=phone).first()

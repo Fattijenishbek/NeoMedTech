@@ -1,3 +1,4 @@
+from statistics import mode
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -10,21 +11,21 @@ from django.contrib.auth.models import (
 
 
 class SuperUser(BaseUserManager):
-    def create_user(self, username, phone, password, **extra_fields):
+    def create_user(self, username, password, email,**extra_fields):
         user = self.model(
             username=username,
-            phone=phone,
+            email=self.normalize_email(email),
             **extra_fields
         )
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, username, phone, password):
+    def create_superuser(self, username, email, password):
 
         user = self.create_user(
             username=username,
-            phone=phone,
+            email=self.normalize_email(email),
             password=password,
         )
         user.is_superuser = True
@@ -41,7 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('office_manager', 'office_manager'),
         ('admin', 'admin'),
     ]
-    username = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -54,14 +55,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=255, null=True, blank=True, unique=True)
 
 
-    USERNAME_FIELD = "phone"
+    USERNAME_FIELD = "email"
 
     REQUIRED_FIELDS = ["username"]
 
     objects = SuperUser()
 
     def __str__(self):
-        return self.username
+        return f"{self.first_name} {self.last_name}"
 
 
     class Meta:

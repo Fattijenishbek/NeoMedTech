@@ -7,7 +7,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "username",
             "first_name",
             "last_name",
             "birth_date",
@@ -21,7 +20,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         read_only_fields = ['is_active']
         extra_kwargs = {
             "phone": {"required": True},
-            "username": {"required": True},
             "password": {"write_only": True, "min_length": 8},
             'email': {'required': True},
             "user_type": {"required": True},
@@ -30,7 +28,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create(
             phone=validated_data["phone"],
-            username=validated_data["username"],
             user_type=validated_data["user_type"],
             email=validated_data["email"],
             birth_date=validated_data['birth_date'],
@@ -45,7 +42,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginWebSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "phone", "password"]
+        fields = ["email", "password"]
+
+class LoginMobileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ["phone", "password"]
