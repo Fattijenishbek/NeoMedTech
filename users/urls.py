@@ -9,7 +9,8 @@ from . import views
 
 urlpatterns = [
     path("register/", views.RegisterView.as_view()),
-    path("login/", views.LoginView.as_view()),
+    path("login_web/", views.LoginWebView.as_view()),
+    path("login_mob/", views.LoginMobileView.as_view()),
     path("refresh/", TokenRefreshView.as_view()),
     path('reset_password/', auth_views.PasswordResetView.as_view(), name="reset_password"),
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
