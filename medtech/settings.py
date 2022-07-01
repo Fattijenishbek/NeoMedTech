@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY') #'django-insecure-w=$38q@9d9c+z*0*5$)+is&-s%m_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ['neomedtech.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['neomedtech.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -90,11 +90,7 @@ WSGI_APPLICATION = 'medtech.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'PORT': config('DB_PORT'),
-        'HOST': config('DB_HOST'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
