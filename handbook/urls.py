@@ -7,13 +7,12 @@ from rest_framework.routers import DefaultRouter
 
 from .views import *
 
-router2 = DefaultRouter()
+router = DefaultRouter()
 
-router2.register(r'handbook', HandBookViewSet),
-router2.register(r'todo', TodoViewSet),
-router2.register(r'essentials', EssentialsViewSet)
-router2.register(r'article', ArticleViewSet)
+router.register(r'handbook', HandBookViewSet),
+router.register(r'todo', TodoViewSet),
+router.register(r'essentials', EssentialsViewSet)
 
 urlpatterns = [
-    path('', include(router2.urls))
+    path('', include(router.urls))
 ]

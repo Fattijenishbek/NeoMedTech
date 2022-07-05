@@ -1,43 +1,24 @@
 from email.mime import image
+import imp
 from django.db import models
 from django.conf import settings
-from users.models import Patient
-import datetime
-
 
 # Create your models here.
+
+class HandBook(models.Model):
+    week = models.IntegerField(default=1)
+    title=models.CharField(max_length=250)
+    image=models.ImageField()
+    content=models.TextField()
+
+
 class Todo(models.Model):
-    task = models.CharField(max_length=255)
-    done = models.BooleanField(default=False)
-    date = models.DateField(default=datetime.date.today)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.task} - {self.patient}'
-
-
-class Article(models.Model):
-    title = models.CharField(max_length=128)
-    content = models.TextField()
-
-    def __str__(self):
-        return self.title
-
-
-class Handbook(models.Model):
-    week = models.PositiveSmallIntegerField()
-    title = models.CharField(max_length=128)
-    content = models.TextField()
-    image = models.ImageField()
-
-    def __str__(self):
-        return self.title
-
+    task=models.CharField(max_length=250)
+    done=models.BooleanField(default=False)
+    date=models.DateTimeField(auto_now_add=False)
+    # patient=models.ForeignKey(settings.User)
 
 class Essentials(models.Model):
-    title = models.CharField(max_length=128)
-    done = models.BooleanField()
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
+    name=models.CharField(max_length=250)
+    done=models.BooleanField(default=False)
+    #patient
