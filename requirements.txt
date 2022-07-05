@@ -19,9 +19,8 @@ Jinja2==3.0.3
 MarkupSafe==2.1.0
 packaging==21.3
 Pillow==9.0.1
-psycopg2==2.9.3
 PyJWT==2.3.0
-pyparsing==3.0.7
+pyparsing==3.0.7                                P01`Q2  a
 python-dateutil==2.8.2
 python-decouple==3.6
 pytz==2021.3
