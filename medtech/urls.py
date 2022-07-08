@@ -15,16 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
-from users.views import RegisterView
 from .yasg import urlpatterns as doc_url
+from patches import routers
+from checklist.urls import checklist_router
+from schedule.urls import schedule_router
+from handbook.urls import handbook_router
+router = routers.DefaultRouter()
 
+router.extend(checklist_router)
+router.extend(schedule_router)
+router.extend(handbook_router)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('users.urls')),
-    path('', include('checklist.urls')),
-    path('', include('handbook.urls')),
+    path('api/', include(router.urls))
 ]
 
 urlpatterns += doc_url

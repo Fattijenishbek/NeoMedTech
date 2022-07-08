@@ -5,13 +5,16 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
 from rest_framework.routers import DefaultRouter
+from . import views
 
-from .views import ScheduleViewSet
 
-router = DefaultRouter()
+checklist_router = DefaultRouter()
 
-router.register(r'schedule', ScheduleViewSet)
+checklist_router.register(r'answer', views.AnswerView)
+checklist_router.register(r'question', views.QuestionView)
+checklist_router.register(r'med-card', views.MedCardView)
+checklist_router.register(r'check-list', views.CheckListView)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(checklist_router.urls))
 ]
