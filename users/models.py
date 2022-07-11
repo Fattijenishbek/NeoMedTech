@@ -11,13 +11,13 @@ from django.contrib.auth.models import (
 
 
 class SuperUser(BaseUserManager):
-    def create_user(self, username, password, email,**extra_fields):
+    def create_user(self, username, email, **extra_fields):
         user = self.model(
             username=username,
             email=self.normalize_email(email),
             **extra_fields
         )
-        user.set_password(password)
+        user.set_unusable_password()
         user.save()
         return user
 
@@ -28,6 +28,7 @@ class SuperUser(BaseUserManager):
             email=self.normalize_email(email),
             password=password,
         )
+        user.set_password(password)
         user.is_superuser = True
         user.is_staff = True
         user.user_type = 'admin'
@@ -73,6 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Patient(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     month_of_pregnancy = models.DateField(auto_now_add=False, null=True, blank=True)
+    inn = models.CharField(max_length=20)
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):

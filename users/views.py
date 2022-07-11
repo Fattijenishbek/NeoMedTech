@@ -10,6 +10,7 @@ from users.serializers import (
     LoginMobileSerializer,
     LoginWebSerializer,
     RegisterSerializer,
+    RegisterPatientSerializer,
 
 )
 
@@ -19,6 +20,18 @@ class RegisterView(generics.GenericAPIView):
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegisterPatientView(generics.GenericAPIView):
+    serializer_class = RegisterPatientSerializer
+
+    def post(self, request):
+        serializer = RegisterPatientSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -62,14 +75,10 @@ class LoginMobileView(generics.GenericAPIView):
 
     def post(self, request):
         phone = request.data['phone']
-        password = request.data["password"]
 
         user = User.objects.filter(phone=phone).first()
         if user is None:
             raise AuthenticationFailed("User not found!")
-
-        if not user.check_password(password):
-            raise AuthenticationFailed("Incorrect password!")
 
         refresh = RefreshToken.for_user(user)
 
