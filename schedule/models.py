@@ -20,8 +20,8 @@ class WorkDate(models.Model):
 
 
 class Appointment(models.Model):
-    disease = models.CharField(max_length=100)
-    content = models.CharField(max_length=255)
+    record = models.CharField(max_length=100)
+    inn = models.PositiveSmallIntegerField(default=0)
     date = models.DateField(auto_now_add=False)
     start_time = models.TimeField(auto_now_add=False)
     end_time = models.TimeField(auto_now_add=False)
