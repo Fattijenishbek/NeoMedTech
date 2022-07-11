@@ -24,4 +24,4 @@ RUN python manage.py collectstatic --noinput
 RUN adduser -u 123 nurs
 USER nurs
 # run gunicorn
-CMD gunicorn cinematica.wsgi:application --bind 0.0.0.0:$PORT
+CMD gunicorn medtech.wsgi:application --bind 0.0.0.0:$PORT
