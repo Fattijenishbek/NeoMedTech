@@ -51,9 +51,9 @@ class AppointmentSerializer(serializers.ModelSerializer):
         doc = data.get('doctor')
         inn = data.get('inn')
 
-        if not Patient.objects.get(inn=inn):
+        if not Patient.objects.filter(inn=inn):
             raise serializers.ValidationError("The inn doesn't match!")
-        
+
         if not Schedule.objects.filter(doctor_id=doc.id, work_date__date=date, work_date__start__lte=start_time,
                                        work_date__end__gte=end_time).exists():
             raise serializers.ValidationError('The doctor is not working at this time!')
