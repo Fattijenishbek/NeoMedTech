@@ -96,6 +96,13 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASE_URL = os.environ.get('DATABASE_URL')
 db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500, ssl_require=True)
 DATABASES['default'].update(db_from_env)
@@ -185,6 +192,8 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 STATIC_URL = '/static/'
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (

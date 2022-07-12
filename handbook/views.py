@@ -29,3 +29,12 @@ class EssentialsViewSet(viewsets.ModelViewSet):
 class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     queryset = Article.objects.all()
+
+
+class AdvicesViewSet(viewsets.ModelViewSet):
+    serializer_class = AdvicesSerializer
+    queryset = Advices.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        serializer = AdvicesSerializer(Advices.objects.all(), many=True)
+        return Response(serializer.data)

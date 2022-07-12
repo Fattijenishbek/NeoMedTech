@@ -1,3 +1,4 @@
+from django.utils import timezone
 from statistics import mode
 from django.db import models
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
+    AbstractUser
 )
 
 
@@ -44,17 +46,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('admin', 'admin'),
     ]
     username = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(blank=True, null=True, unique=True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     birth_date = models.DateField(null=True, blank=True)
+    date_joined = models.DateTimeField(default=timezone.now)
     user_type = models.CharField(max_length=255, choices=user_type_choices, default='patient', null=True)
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True, unique=True)
-
 
     USERNAME_FIELD = "email"
 
@@ -97,8 +100,12 @@ class Patient(models.Model):
 
 class Doctor(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    resign = models.PositiveSmallIntegerField(null=True, blank=True)
-    image = models.ImageField(null=True, blank=True)
+    resign = models.CharField(max_length=255, null=True, blank=True)
+    education = models.TextField()
+    professional_sphere = models.TextField()
+    work_experience = models.TextField()
+    achievements = models.TextField()
+
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):

@@ -7,10 +7,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "first_name",
             "last_name",
             "birth_date",
             "email",
+            "image",
             "user_type",
             "password",
             "address",
@@ -21,6 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password": {"write_only": True, "min_length": 8},
             'email': {'required': True},
             "user_type": {"required": True},
+            "image": {"required": False}
         }
 
     def create(self, validated_data):
@@ -31,6 +34,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],
             address=validated_data["address"],
+            image=validated_data["image"]
         )
 
         user.set_password(validated_data["password"])
@@ -38,21 +42,32 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
+    def validate(self, data):
+        if data['value'][:3] != '996':
+            raise serializers.ValidationError('Value should be 996 ')
+
+        return data
+
 
 class RegisterPatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "first_name",
             "last_name",
             "birth_date",
+            "image",
             "phone",
+            "phones",
             "user_type",
             "address",
         ]
+
         extra_kwargs = {
             "phone": {"required": True},
             "user_type": {"required": True},
+            "image": {"required": False}
         }
         read_only_fields = ['user_type']
 
