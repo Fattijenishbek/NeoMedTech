@@ -59,7 +59,6 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
             "birth_date",
             "image",
             "phone",
-            "phones",
             "user_type",
             "address",
         ]
