@@ -46,7 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('admin', 'admin'),
     ]
     username = models.CharField(max_length=255)
-    email = models.EmailField(blank=True, null=True, unique=True)
+    email = models.EmailField(null=True, unique=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
