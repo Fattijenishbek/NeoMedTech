@@ -28,3 +28,9 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = '__all__'
+
+
+class PicturesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pictures
+        fields = "__all__"

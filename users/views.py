@@ -1,6 +1,5 @@
-from django.db.models import Q
 from rest_framework import generics, status
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -33,15 +32,9 @@ class RegisterPatientView(generics.GenericAPIView):
     def post(self, request):
         serializer = RegisterPatientSerializer(data=request.data)
         if serializer.is_valid():
-
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
 
 
 class LoginWebView(generics.GenericAPIView):

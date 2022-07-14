@@ -31,10 +31,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
 
 
-class AdvicesViewSet(viewsets.ModelViewSet):
-    serializer_class = AdvicesSerializer
-    queryset = Advices.objects.all()
-
-    def list(self, request, *args, **kwargs):
-        serializer = AdvicesSerializer(Advices.objects.all(), many=True)
-        return Response(serializer.data)
+class PicturesViewSet(viewsets.ModelViewSet):
+    serializer_class = PicturesSerializer
+    queryset = Pictures.objects.all()

@@ -13,7 +13,7 @@ handbook_router.register(r'handbook', HandBookViewSet)
 handbook_router.register(r'todo', TodoViewSet)
 handbook_router.register(r'essentials', EssentialsViewSet)
 handbook_router.register(r'article', ArticleViewSet)
-handbook_router.register(r'advices', AdvicesViewSet)
+handbook_router.register(r'pictures', PicturesViewSet)
 
 
 urlpatterns = [

@@ -1,7 +1,5 @@
 from django.db.models import Q
 from rest_framework import serializers
-
-from users.models import Patient, Doctor
 from .models import (
     Schedule,
     Appointment,
@@ -36,10 +34,10 @@ class AppointmentSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'record',
-            'inn',
             'date',
             'start_time',
             'end_time',
+            'description',
             'doctor',
             'patient'
         ]
@@ -49,10 +47,6 @@ class AppointmentSerializer(serializers.ModelSerializer):
         start_time = data.get('start_time')
         end_time = data.get('end_time')
         doc = data.get('doctor')
-        inn = data.get('inn')
-
-        if not Patient.objects.filter(inn=inn):
-            raise serializers.ValidationError("The inn doesn't match!")
 
         if not Schedule.objects.filter(doctor_id=doc.id, work_date__date=date, work_date__start__lte=start_time,
                                        work_date__end__gt=end_time).exists():

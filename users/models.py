@@ -33,7 +33,6 @@ class SuperUser(BaseUserManager):
         user.set_password(password)
         user.is_superuser = True
         user.is_staff = True
-        user.user_type = 'admin'
         user.save()
         return user
 
@@ -43,7 +42,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('doctor', 'doctor'),
         ('patient', 'patient'),
         ('office_manager', 'office_manager'),
-        ('admin', 'admin'),
     ]
     username = models.CharField(max_length=255)
     email = models.EmailField(null=True, unique=True)
