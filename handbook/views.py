@@ -1,16 +1,16 @@
-from django import views
-from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
-from handbook.serializers import *
+from .serializers import *
 from .models import *
 
-
-# Create your views here.
 
 class HandBookViewSet(viewsets.ModelViewSet):
     serializer_class = HandBookSerializer
     queryset = Handbook.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        serializer = HandBookListSerializer(Handbook.objects.all(), many=True)
+        return Response(serializer.data)
 
 
 class TodoViewSet(viewsets.ModelViewSet):
@@ -20,6 +20,7 @@ class TodoViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         serializer = TodoListSerializer(Todo.objects.all(), many=True)
         return Response(serializer.data)
+
 
 class EssentialsViewSet(viewsets.ModelViewSet):
     serializer_class = EssentialsSerializer
@@ -31,10 +32,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
 
 
-class AdvicesViewSet(viewsets.ModelViewSet):
-    serializer_class = AdvicesSerializer
-    queryset = Advices.objects.all()
-
-    def list(self, request, *args, **kwargs):
-        serializer = AdvicesSerializer(Advices.objects.all(), many=True)
-        return Response(serializer.data)
+class PicturesViewSet(viewsets.ModelViewSet):
+    serializer_class = PicturesSerializer
+    queryset = Pictures.objects.all()

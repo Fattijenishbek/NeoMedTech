@@ -11,6 +11,7 @@ from .models import (
 )
 
 
+
 class ScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleSerializer
     queryset = Schedule.objects.all()
@@ -24,3 +25,4 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 class WorkDateViewSet(viewsets.ModelViewSet):
     serializer_class = WorkDateSerializer
     queryset = WorkDate.objects.all()
+

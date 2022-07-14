@@ -27,6 +27,7 @@ class MedCardSerializer(serializers.ModelSerializer):
 
 class QuestionAnswerSerializer(serializers.ModelSerializer):
     question = serializers.StringRelatedField()
+
     class Meta:
         model = models.Answer
         fields = ['answer', 'question']

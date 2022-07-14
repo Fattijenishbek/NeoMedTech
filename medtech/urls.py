@@ -20,11 +20,13 @@ from patches import routers
 from checklist.urls import checklist_router
 from schedule.urls import schedule_router
 from handbook.urls import handbook_router
+from users.urls import user_router
 router = routers.DefaultRouter()
 
 router.extend(checklist_router)
 router.extend(schedule_router)
 router.extend(handbook_router)
+router.extend(user_router)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

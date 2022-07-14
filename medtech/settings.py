@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'drf_yasg',
     'checklist',
     'handbook',
-    'schedule'
+    'schedule',
+    'django_filters',
+    #'storages',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +64,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
 ROOT_URLCONF = 'medtech.urls'
 
 TEMPLATES = [
@@ -149,13 +153,15 @@ AUTH_USER_MODEL = 'users.User'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
     ],
 }
 
@@ -202,9 +208,9 @@ STATICFILES_DIRS = (
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-CORS_ALLOWED_ORIGINS = [
-    'https://neomedtech.herokuapp.com',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-]
+#
+# DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+# DROPBOX_OAUTH2_TOKEN = config('DROPBOX_OAUTH2_TOKEN')
+# DROPBOX_ROOT_PATH= '/Apps/SummerTeam'
+# DROPBOX_TIMEOUT = 100
+# DROPBOX_WRITE_MODE = 'add'

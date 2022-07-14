@@ -1,5 +1,5 @@
 from django.utils import timezone
-from statistics import mode
+from datetime import date
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -33,7 +33,6 @@ class SuperUser(BaseUserManager):
         user.set_password(password)
         user.is_superuser = True
         user.is_staff = True
-        user.user_type = 'admin'
         user.save()
         return user
 
@@ -43,7 +42,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('doctor', 'doctor'),
         ('patient', 'patient'),
         ('office_manager', 'office_manager'),
-        ('admin', 'admin'),
     ]
     username = models.CharField(max_length=255)
     email = models.EmailField(null=True, unique=True)
