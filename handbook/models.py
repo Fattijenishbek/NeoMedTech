@@ -16,12 +16,6 @@ class Todo(models.Model):
         return f'{self.task} - {self.patient}'
 
 
-class Advices(models.Model):
-    week = models.CharField(max_length=128, blank=True, null=True)
-    title = models.CharField(max_length=128, blank=True, null=True)
-    content = models.TextField()
-
-
 class Article(models.Model):
     pictures = models.ImageField(upload_to="images/", blank=True, null=True)
     title = models.CharField(max_length=128)
@@ -36,9 +30,12 @@ class Handbook(models.Model):
     weight = models.CharField(max_length=50)
     height = models.CharField(max_length=50)
     title = models.CharField(max_length=128)
-    mini_content = models.CharField(max_length=128)
     content = models.TextField()
-    pictures = models.ForeignKey("Pictures", on_delete=models.CASCADE)
+    advices = models.TextField()
+
+    @property
+    def pictures(self):
+        return Pictures.objects.filter(handbook__id=self.pk)
 
     def __str__(self):
         return self.title
@@ -46,6 +43,7 @@ class Handbook(models.Model):
 
 class Pictures(models.Model):
     image = models.ImageField(upload_to='images/', blank=True, null=True)
+    handbook = models.ForeignKey(Handbook, on_delete=models.CASCADE)
 
 
 class Essentials(models.Model):
