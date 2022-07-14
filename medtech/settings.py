@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'checklist',
     'handbook',
     'schedule',
-    # 'storage',
+    'django_filters',
+    #'storages',
 ]
 
 MIDDLEWARE = [
@@ -158,6 +159,9 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 SIMPLE_JWT = {
@@ -203,7 +207,9 @@ STATICFILES_DIRS = (
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+#
 # DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
 # DROPBOX_OAUTH2_TOKEN = config('DROPBOX_OAUTH2_TOKEN')
-# DROPBOX_ROOT_PATH = '/images'
+# DROPBOX_ROOT_PATH= '/Apps/SummerTeam'
+# DROPBOX_TIMEOUT = 100
+# DROPBOX_WRITE_MODE = 'add'

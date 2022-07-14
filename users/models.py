@@ -1,5 +1,5 @@
 from django.utils import timezone
-from statistics import mode
+from datetime import date
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save

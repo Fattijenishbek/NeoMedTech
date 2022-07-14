@@ -1,3 +1,5 @@
+from datetime import date
+
 from rest_framework import serializers
 
 from .models import User
@@ -88,3 +90,29 @@ class LoginMobileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["phone"]
+
+class UserSerializer(serializers.ModelSerializer):
+    age = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "address",
+            "phone",
+            "birth_date",
+            "date_joined",
+            "email",
+            "user_type",
+            "age",
+        ]
+        read_only_fields = ["date_joined"]
+
+    @staticmethod
+    def get_age(obj):
+        today = date.today()
+        return today.year - obj.birth_date.year - (
+                    (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
+
+
