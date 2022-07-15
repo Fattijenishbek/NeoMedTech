@@ -1,8 +1,5 @@
-from datetime import date
-
 from rest_framework import serializers
-
-from .models import User
+from .models import User, Doctor, Patient
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -53,6 +50,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class RegisterPatientSerializer(serializers.ModelSerializer):
+    user_type = serializers.HiddenField(default='patient')
+
     class Meta:
         model = User
         fields = [
@@ -71,7 +70,7 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
             "user_type": {"required": True},
             "image": {"required": False}
         }
-        read_only_fields = ['user_type', "is_active"]
+        read_only_fields = ["is_active"]
 
     def validate(self, data):
         if data['phone'][:4] != '+996':
@@ -91,8 +90,8 @@ class LoginMobileSerializer(serializers.ModelSerializer):
         model = User
         fields = ["phone"]
 
+
 class UserSerializer(serializers.ModelSerializer):
-    age = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = [
@@ -105,14 +104,21 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "email",
             "user_type",
-            "age",
         ]
         read_only_fields = ["date_joined"]
 
-    @staticmethod
-    def get_age(obj):
-        today = date.today()
-        return today.year - obj.birth_date.year - (
-                    (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
+
+class DoctorProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Doctor
+        fields = '__all__'
 
 
+class PatientProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Patient
+        fields = '__all__'

@@ -1,5 +1,7 @@
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.core.mail import send_mail
 from django.utils import timezone
-from datetime import date
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -8,7 +10,6 @@ from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
-    AbstractUser
 )
 
 
@@ -24,7 +25,6 @@ class SuperUser(BaseUserManager):
         return user
 
     def create_superuser(self, username, email, password):
-
         user = self.create_user(
             username=username,
             email=self.normalize_email(email),
@@ -40,18 +40,17 @@ class SuperUser(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     user_type_choices = [
         ('doctor', 'doctor'),
-        ('patient', 'patient'),
         ('office_manager', 'office_manager'),
     ]
     username = models.CharField(max_length=255)
     email = models.EmailField(null=True, unique=True)
-    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    image = models.ImageField(null=True, blank=True, upload_to='images/')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     birth_date = models.DateField(null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
-    user_type = models.CharField(max_length=255, choices=user_type_choices, default='patient', null=True)
+    user_type = models.CharField(max_length=255, choices=user_type_choices, default='admin')
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
@@ -65,7 +64,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
 
     class Meta:
         verbose_name = 'System user'
@@ -104,7 +102,6 @@ class Doctor(models.Model):
     work_experience = models.TextField()
     achievements = models.TextField()
 
-
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
         if created:
@@ -122,3 +119,20 @@ class Doctor(models.Model):
 
     def __str__(self):
         return f'{self.user}'
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'),
+                                                   reset_password_token.key)
+
+    send_mail(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "noreply@somehost.local",
+        # to:
+        [reset_password_token.user.email]
+    )

@@ -8,11 +8,13 @@ from users.serializers import (
     LoginWebSerializer,
     RegisterSerializer,
     RegisterPatientSerializer,
-    UserSerializer
+    UserSerializer, DoctorProfileSerializer,
+    PatientProfileSerializer
 
 )
-from users.models import User
+from users.models import User, Doctor, Patient
 from django_filters import rest_framework as filters
+
 
 class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -56,9 +58,10 @@ class LoginWebView(generics.GenericAPIView):
 
         is_superuser = user.is_superuser
         user_type = user.user_type
-
+        id = user.id
         return Response(
             {
+                'user_id': id,
                 "status": "You successfully logged in",
                 "is_superuser": is_superuser,
                 "user_type": user_type,
@@ -83,9 +86,10 @@ class LoginMobileView(generics.GenericAPIView):
 
         is_superuser = user.is_superuser
         user_type = user.user_type
-
+        id = user.id
         return Response(
             {
+                'user_id': id,
                 "status": "You successfully logged in",
                 "is_superuser": is_superuser,
                 "user_type": user_type,
@@ -95,13 +99,12 @@ class LoginMobileView(generics.GenericAPIView):
         )
 
 
-
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_fields = ('first_name', 'birth_date')
+    http_method_names = ['get', 'put', 'patch', 'delete']
 
 
 class PatientViewSet(viewsets.ModelViewSet):
@@ -117,3 +120,15 @@ class DoctorViewSet(viewsets.ModelViewSet):
 class OfficeManagerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='office_manager')
     serializer_class = UserSerializer
+
+
+class DoctorProfileViewSet(viewsets.ModelViewSet):
+    queryset = Doctor.objects.all()
+    serializer_class = DoctorProfileSerializer
+    http_method_names = ['get', 'put', 'patch', 'delete']
+
+
+class PatientProfileViewSet(viewsets.ModelViewSet):
+    queryset = Patient.objects.all()
+    serializer_class = PatientProfileSerializer
+    http_method_names = ['get', 'put', 'patch', 'delete']

@@ -28,8 +28,7 @@ SECRET_KEY = config('SECRET_KEY')  # 'django-insecure-w=$38q@9d9c+z*0*5$)+is&-s%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ['neomedtech.herokuapp.com', 'localhost', '127.0.0.1']
-
+ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,7 +47,9 @@ INSTALLED_APPS = [
     'handbook',
     'schedule',
     'django_filters',
-    #'storages',
+    'cloudinary_storage',
+    'cloudinary',
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +64,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'medtech.urls'
@@ -105,7 +106,7 @@ DATABASES = {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
-#}
+# }
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500, ssl_require=True)
@@ -199,17 +200,15 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 STATIC_URL = '/static/'
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
-)
+STATICFILES_DIRS = ()
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#
-# DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
-# DROPBOX_OAUTH2_TOKEN = config('DROPBOX_OAUTH2_TOKEN')
-# DROPBOX_ROOT_PATH= '/Apps/SummerTeam'
-# DROPBOX_TIMEOUT = 100
-# DROPBOX_WRITE_MODE = 'add'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUD_NAME'),
+    'API_KEY': config('API_KEY'),
+    'API_SECRET': config('API_SECRET'),
+}
