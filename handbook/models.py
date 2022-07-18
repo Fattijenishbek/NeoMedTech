@@ -28,7 +28,6 @@ class Handbook(models.Model):
     weight = models.CharField(max_length=50)
     height = models.CharField(max_length=50)
     title = models.TextField()
-    mini_title = models.TextField()
     content = models.TextField()
     advices = models.TextField()
     pictures = models.ManyToManyField('Pictures')
