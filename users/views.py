@@ -1,6 +1,6 @@
 from rest_framework import generics, status, viewsets, filters
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.serializers import (
@@ -8,8 +8,7 @@ from users.serializers import (
     LoginWebSerializer,
     RegisterSerializer,
     RegisterPatientSerializer,
-    UserSerializer, DoctorProfileSerializer,
-    PatientProfileSerializer
+    UserSerializer, DoctorProfileSerializer, PatientProfileSerializer,
 
 )
 from users.models import User, Doctor, Patient
@@ -47,7 +46,7 @@ class LoginWebView(generics.GenericAPIView):
         email = request.data['email']
         password = request.data["password"]
 
-        user = User.objects.filter(email=email).first()
+        user = User.objects.get(email=email)
         if user is None:
             raise AuthenticationFailed("User not found!")
 
@@ -116,6 +115,13 @@ class DoctorViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='doctor')
     serializer_class = UserSerializer
 
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+
 
 class OfficeManagerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='office_manager')
@@ -123,12 +129,10 @@ class OfficeManagerViewSet(viewsets.ModelViewSet):
 
 
 class DoctorProfileViewSet(viewsets.ModelViewSet):
-    queryset = Doctor.objects.all()
+    queryset = User.objects.filter(user_type='doctor')
     serializer_class = DoctorProfileSerializer
-    http_method_names = ['get', 'put', 'patch', 'delete']
 
 
 class PatientProfileViewSet(viewsets.ModelViewSet):
-    queryset = Patient.objects.all()
+    queryset = User.objects.filter(user_type='patient')
     serializer_class = PatientProfileSerializer
-    http_method_names = ['get', 'put', 'patch', 'delete']

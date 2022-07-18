@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .serializers import *
 from .models import *
@@ -30,6 +31,7 @@ class EssentialsViewSet(viewsets.ModelViewSet):
 class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     queryset = Article.objects.all()
+    permission_classes = [IsAuthenticated, ]
 
 
 class PicturesViewSet(viewsets.ModelViewSet):

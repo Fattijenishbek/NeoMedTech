@@ -13,8 +13,8 @@ user_router.register(r'all-users', UserViewSet, basename='all-users')
 user_router.register(r'patient', PatientViewSet, basename='patient')
 user_router.register(r'doctor', DoctorViewSet, basename='doctor')
 user_router.register(r'office-manager', OfficeManagerViewSet, basename='office-manager')
-user_router.register(r'doctor-profile', DoctorProfileViewSet)
-user_router.register(r'patient-profile', PatientProfileViewSet)
+user_router.register(r'doctor-profile', DoctorProfileViewSet, basename='doctor-profile')
+user_router.register(r'patient-profile', PatientProfileViewSet, basename='patient-profile')
 
 urlpatterns = [
     path("register/", views.RegisterView.as_view()),
