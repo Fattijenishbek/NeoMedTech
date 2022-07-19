@@ -31,7 +31,8 @@ router.extend(user_router)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('users.urls')),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('auth/', include('rest_framework.urls')),
 ]
 
 urlpatterns += doc_url
