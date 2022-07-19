@@ -116,16 +116,6 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'put', 'patch', 'delete']
 
 
-class PatientViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(user_type='patient')
-    serializer_class = UserSerializer
-
-
-class DoctorViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(user_type='doctor')
-    serializer_class = UserSerializer
-
-
 class OfficeManagerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='office_manager')
     serializer_class = UserSerializer

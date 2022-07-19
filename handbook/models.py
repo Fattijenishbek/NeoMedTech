@@ -32,15 +32,8 @@ class Handbook(models.Model):
     title = models.TextField()
     content = models.TextField()
     advices = models.TextField()
-    pictures = models.ManyToManyField('Pictures')
-
-    def __str__(self):
-        return self.title
-
-
-class Pictures(models.Model):
-    title = models.CharField(max_length=128)
-    image = models.ImageField(upload_to='images/', blank=True, null=True)
+    fruit_img = models.ImageField(upload_to="images/", blank=True, null=True)
+    baby_img = models.ImageField(upload_to="images/", blank=True, null=True)
 
     def __str__(self):
         return self.title
