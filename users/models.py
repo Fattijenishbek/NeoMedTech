@@ -1,13 +1,13 @@
-from django.utils import timezone
-from django.db import models
 from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils import timezone
 
 
 class SuperUser(BaseUserManager):
@@ -71,7 +71,6 @@ class Patient(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_of_pregnancy = models.DateField(auto_now_add=False, null=True, blank=True)
     inn = models.CharField(max_length=14)
-
 
     def __str__(self):
         return f'{self.user}'

@@ -1,33 +1,34 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from . import serializers as ser
-from . import models
+
+from .models import Question, Answer, MedCard, CheckList
+from .serializers import QuestionSerializer, AnswerSerializer, AnswerListSerializer, MedCardSerializer, \
+    MedCardListSerializer, CheckListSerializer
 
 
 class QuestionView(viewsets.ModelViewSet):
-    serializer_class = ser.QuestionSerializer
-    queryset = models.Question.objects.all()
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
 
 
 class AnswerView(viewsets.ModelViewSet):
-    serializer_class = ser.AnswerSerializer
-    queryset = models.Answer.objects.all()
-
+    serializer_class = AnswerSerializer
+    queryset = Answer.objects.all()
 
     def list(self, request, *args, **kwargs):
-        serializer = ser.AnswerListSerializer(models.Answer.objects.all(), many=True)
+        serializer = AnswerListSerializer(Answer.objects.all(), many=True)
         return Response(serializer.data)
 
 
 class MedCardView(viewsets.ModelViewSet):
-    serializer_class = ser.MedCardSerializer
-    queryset = models.MedCard.objects.all()
+    serializer_class = MedCardSerializer
+    queryset = MedCard.objects.all()
 
     def list(self, request, *args, **kwargs):
-        serializer = ser.MedCardListSerializer(models.MedCard.objects.all(), many=True)
+        serializer = MedCardListSerializer(MedCard.objects.all(), many=True)
         return Response(serializer.data)
 
 
 class CheckListView(viewsets.ModelViewSet):
-    serializer_class = ser.CheckListSerializer
-    queryset = models.CheckList.objects.all()
+    serializer_class = CheckListSerializer
+    queryset = CheckList.objects.all()

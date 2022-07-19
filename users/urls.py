@@ -1,13 +1,14 @@
-from django.urls import path, include
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
+
+from . import views
 from .views import UserViewSet, \
     PatientViewSet, DoctorViewSet, \
     OfficeManagerViewSet, DoctorProfileViewSet, \
     PatientProfileViewSet, PasswordResetView, PasswordResetConfirmView
-from . import views
 
 user_router = DefaultRouter()
 user_router.register(r'all-users', UserViewSet, basename='all-users')

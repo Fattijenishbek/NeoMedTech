@@ -1,6 +1,8 @@
-from django.db import models
-from users.models import Patient
 import datetime
+
+from django.db import models
+
+from users.models import Patient
 
 
 # Create your models here.

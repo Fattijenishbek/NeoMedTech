@@ -1,11 +1,15 @@
-from django.contrib.auth import get_user_model, authenticate
-from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from rest_framework import serializers
-from django.utils.encoding import force_text
-from rest_framework.exceptions import ValidationError
-from django.utils.http import urlsafe_base64_decode as uid_decoder
-from django.contrib.auth.tokens import default_token_generator
+from datetime import date
+
+from dateutil import relativedelta
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode as uid_decoder
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
 from .models import User, Doctor, Patient
 from .services import ModelSerializerWithValidate
 
@@ -55,6 +59,7 @@ class RegisterSerializer(ModelSerializerWithValidate):
 
 class PatientSerializer(serializers.ModelSerializer):
     week_of_pregnancy = serializers.SerializerMethodField()
+    month_of_pregnancy = serializers.SerializerMethodField()
 
     class Meta:
         model = Patient
@@ -65,6 +70,16 @@ class PatientSerializer(serializers.ModelSerializer):
         if len(inn) != 14:
             raise serializers.ValidationError('Your length of inn should be 14 characters!!!')
         return data
+
+    def get_week_of_pregnancy(self, obj):
+        days = abs(obj.date_of_pregnancy - date.today()).days
+        return days // 7
+
+    def get_month_of_pregnancy(self, obj):
+        pregnancy_date = obj.date_of_pregnancy
+        today = date.today()
+        delta = relativedelta.relativedelta(today, pregnancy_date)
+        return delta.months + delta.years * 12
 
 
 class RegisterPatientSerializer(ModelSerializerWithValidate):

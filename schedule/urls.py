@@ -13,7 +13,6 @@ schedule_router.register(r'schedule', ScheduleViewSet)
 schedule_router.register(r'appointment', AppointmentViewSet)
 schedule_router.register(r'work-date', WorkDateViewSet)
 
-
 urlpatterns = [
     path('', include(schedule_router.urls))
 ]

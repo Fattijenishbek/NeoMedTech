@@ -1,9 +1,14 @@
-from rest_framework import generics, status, viewsets, filters
+from django.utils.decorators import method_decorator
+from django.views.decorators.debug import sensitive_post_parameters
+from django_filters import rest_framework as filters
+from rest_framework import generics, status, viewsets
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from users.models import User
 from users.serializers import (
     LoginMobileSerializer,
     LoginWebSerializer,
@@ -13,16 +18,12 @@ from users.serializers import (
     PatientProfileSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
 )
 
-from django.views.decorators.debug import sensitive_post_parameters
-from django.utils.decorators import method_decorator
-from users.models import User, Doctor, Patient
-from django_filters import rest_framework as filters
-
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
         'password', 'old_password', 'new_password1', 'new_password2'
     )
 )
+
 
 class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -143,7 +144,6 @@ class PatientProfileViewSet(viewsets.ModelViewSet):
 
 
 class PasswordResetView(GenericAPIView):
-
     """
     Calls Django Auth PasswordResetForm save method.
     Accepts the following POST parameters: email

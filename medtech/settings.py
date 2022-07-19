@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'medtech.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -163,6 +163,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
     ],
+    'DATETIME_FORMAT': '%d.%m.%Y',
+    'DATE_FORMAT': '%d.%m.%Y',
 }
 
 SIMPLE_JWT = {

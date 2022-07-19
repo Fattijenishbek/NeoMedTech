@@ -1,15 +1,15 @@
 from rest_framework import viewsets
-from .serializers import (
-    ScheduleSerializer,
-    AppointmentSerializer,
-    WorkDateSerializer,
-)
+
 from .models import (
     Schedule,
     Appointment,
     WorkDate,
 )
-
+from .serializers import (
+    ScheduleSerializer,
+    AppointmentSerializer,
+    WorkDateSerializer,
+)
 
 
 class ScheduleViewSet(viewsets.ModelViewSet):
@@ -25,4 +25,3 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 class WorkDateViewSet(viewsets.ModelViewSet):
     serializer_class = WorkDateSerializer
     queryset = WorkDate.objects.all()
-
