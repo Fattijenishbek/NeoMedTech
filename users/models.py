@@ -68,32 +68,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Patient(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    month_of_pregnancy = models.DateField(auto_now_add=False, null=True, blank=True)
-    inn = models.CharField(max_length=20)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date_of_pregnancy = models.DateField(auto_now_add=False, null=True, blank=True)
+    inn = models.CharField(max_length=14)
 
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            if instance.user_type == 'patient':
-                Patient.objects.create(user=instance)
-            else:
-                pass
-
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        if instance.user_type == 'patient':
-            instance.patient.save()
-        else:
-            pass
 
     def __str__(self):
         return f'{self.user}'
 
 
 class Doctor(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    resign = models.CharField(max_length=255, null=True, blank=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    resign = models.CharField(max_length=255)
     education = models.TextField()
     professional_sphere = models.TextField()
     work_experience = models.TextField()

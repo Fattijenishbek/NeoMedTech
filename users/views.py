@@ -55,7 +55,7 @@ class LoginWebView(generics.GenericAPIView):
         email = request.data['email']
         password = request.data["password"]
 
-        user = User.objects.filter(email=email).first()
+        user = User.objects.get(email=email)
         if user is None:
             raise AuthenticationFailed("User not found!")
 
@@ -131,13 +131,13 @@ class OfficeManagerViewSet(viewsets.ModelViewSet):
 
 
 class DoctorProfileViewSet(viewsets.ModelViewSet):
-    queryset = Doctor.objects.all()
+    queryset = User.objects.filter(user_type='doctor')
     serializer_class = DoctorProfileSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
 
 
 class PatientProfileViewSet(viewsets.ModelViewSet):
-    queryset = Patient.objects.all()
+    queryset = User.objects.filter(user_type='patient')
     serializer_class = PatientProfileSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
 
