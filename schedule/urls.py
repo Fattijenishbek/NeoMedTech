@@ -4,14 +4,16 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     ScheduleViewSet,
     AppointmentViewSet,
-    WorkDateViewSet,
+    TimeSlotsView,
+    WorkDaysView
 )
 
 schedule_router = DefaultRouter()
 
 schedule_router.register(r'schedule', ScheduleViewSet)
 schedule_router.register(r'appointment', AppointmentViewSet)
-schedule_router.register(r'work-date', WorkDateViewSet)
+schedule_router.register(r'time-slots', TimeSlotsView)
+schedule_router.register(r'work-days', WorkDaysView)
 
 urlpatterns = [
     path('', include(schedule_router.urls))
