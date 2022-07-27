@@ -27,8 +27,10 @@ class Article(models.Model):
 
 class Handbook(models.Model):
     week = models.PositiveSmallIntegerField(default=1)
-    weight = models.CharField(max_length=50)
-    height = models.CharField(max_length=50)
+    weight_of_baby = models.PositiveSmallIntegerField()
+    height = models.PositiveSmallIntegerField()
+    weight_of_mom = models.PositiveSmallIntegerField()
+    nutrition = models.TextField()
     title = models.TextField()
     content = models.TextField()
     advices = models.TextField()
@@ -46,3 +48,11 @@ class Essentials(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=256)
+    answer = models.TextField()
+
+    def __str__(self):
+        return f'{self.question}'
