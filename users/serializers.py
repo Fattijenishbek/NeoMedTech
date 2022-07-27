@@ -34,9 +34,7 @@ class RegisterSerializer(ModelSerializerWithValidate):
         read_only_fields = ['is_active']
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 8},
-            "phone": {"required": True, "max_length": 13},
-            "user_type": {"required": True},
-            "image": {"required": False}
+            "phone": {"max_length": 13, 'min_length': 13},
         }
 
     def create(self, validated_data):
@@ -72,14 +70,18 @@ class PatientSerializer(serializers.ModelSerializer):
         return data
 
     def get_week_of_pregnancy(self, obj):
-        days = abs(obj.date_of_pregnancy - date.today()).days
-        return days // 7
+        if obj.date_of_pregnancy:
+            days = abs(obj.date_of_pregnancy - date.today()).days
+            return days // 7
+        return None
 
     def get_month_of_pregnancy(self, obj):
-        pregnancy_date = obj.date_of_pregnancy
-        today = date.today()
-        delta = relativedelta.relativedelta(today, pregnancy_date)
-        return delta.months + delta.years * 12
+        if obj.date_of_pregnancy:
+            pregnancy_date = obj.date_of_pregnancy
+            today = date.today()
+            delta = relativedelta.relativedelta(today, pregnancy_date)
+            return delta.months + delta.years * 12
+        return None
 
 
 class RegisterPatientSerializer(ModelSerializerWithValidate):
@@ -101,9 +103,7 @@ class RegisterPatientSerializer(ModelSerializerWithValidate):
         ]
 
         extra_kwargs = {
-            "phone": {"required": True},
             "image": {"required": False},
-            'birth_date': {'required': True},
         }
         read_only_fields = ["is_active"]
 
@@ -141,7 +141,7 @@ class UserSerializer(ModelSerializerWithValidate):
             "email",
             "user_type",
         ]
-        read_only_fields = ["date_joined"]
+        read_only_fields = ["date_joined", 'user_type']
 
 
 class DoctorSerializer(serializers.ModelSerializer):
