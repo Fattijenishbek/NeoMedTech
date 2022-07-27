@@ -37,6 +37,11 @@ class RegisterSerializer(ModelSerializerWithValidate):
             "phone": {"max_length": 13, 'min_length': 13},
         }
 
+    def validate_email(self, value):
+        if value is None:
+            raise serializers.ValidationError('This field may not be blank.')
+        return value
+
     def create(self, validated_data):
         user = User.objects.create(
             user_type=validated_data["user_type"],
@@ -72,7 +77,7 @@ class PatientSerializer(serializers.ModelSerializer):
     def get_week_of_pregnancy(self, obj):
         if obj.date_of_pregnancy:
             days = abs(obj.date_of_pregnancy - date.today()).days
-            return days // 7
+            return days // 7 + 1
         return None
 
     def get_month_of_pregnancy(self, obj):
@@ -143,15 +148,52 @@ class UserSerializer(ModelSerializerWithValidate):
         ]
         read_only_fields = ["date_joined", 'user_type']
 
+    def validate_email(self, value):
+        if value is None:
+            raise serializers.ValidationError('This field may not be blank.')
+        return value
+
+
+class PatientProfileSerializer(ModelSerializerWithValidate):
+    patient = PatientSerializer()
+    user_type = serializers.HiddenField(default='patient')
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "address",
+            "phone",
+            'image',
+            "birth_date",
+            "date_joined",
+            "user_type",
+            'patient',
+            'age'
+        ]
+        read_only_fields = ["date_joined"]
+
+    def update(self, instance, validated_data):
+        nested_serializer = self.fields['patient']
+        nested_instance = instance.patient
+        nested_data = validated_data.pop('patient')
+        nested_serializer.update(nested_instance, nested_data)
+        return super(PatientProfileSerializer, self).update(instance, validated_data)
+
 
 class DoctorSerializer(serializers.ModelSerializer):
+    patient = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = Doctor
         fields = ['resign',
                   'education',
                   'professional_sphere',
                   'work_experience',
-                  'achievements']
+                  'achievements',
+                  'patient']
 
 
 class DoctorProfileSerializer(ModelSerializerWithValidate):
@@ -181,36 +223,6 @@ class DoctorProfileSerializer(ModelSerializerWithValidate):
         nested_data = validated_data.pop('doctor')
         nested_serializer.update(nested_instance, nested_data)
         return super(DoctorProfileSerializer, self).update(instance, validated_data)
-
-
-class PatientProfileSerializer(ModelSerializerWithValidate):
-    patient = PatientSerializer()
-    user_type = serializers.HiddenField(default='patient')
-
-    class Meta:
-        model = User
-        fields = [
-            "id",
-            "first_name",
-            "last_name",
-            "address",
-            "phone",
-            'image',
-            'email',
-            "birth_date",
-            "date_joined",
-            "user_type",
-            'patient',
-            'age'
-        ]
-        read_only_fields = ["date_joined"]
-
-    def update(self, instance, validated_data):
-        nested_serializer = self.fields['patient']
-        nested_instance = instance.patient
-        nested_data = validated_data.pop('patient')
-        nested_serializer.update(nested_instance, nested_data)
-        return super(PatientProfileSerializer, self).update(instance, validated_data)
 
 
 class PasswordResetSerializer(serializers.Serializer):
