@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -36,8 +35,7 @@ class SuperUser(BaseUserManager):
 
 class MainUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-
+    email = models.EmailField(unique=True, null=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -76,17 +74,17 @@ class User(MainUser):
 
 
 class Patient(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_of_pregnancy = models.DateField(auto_now_add=False, null=True, blank=True)
     inn = models.CharField(max_length=14)
-    doctor = models.ForeignKey('Doctor', on_delete=models.CASCADE)
+    doctor = models.ForeignKey('Doctor', on_delete=models.CASCADE, related_name='patient')
 
     def __str__(self):
         return f'{self.user}'
 
 
 class Doctor(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     resign = models.CharField(max_length=255)
     education = models.TextField()
     professional_sphere = models.TextField()
