@@ -8,14 +8,17 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.models import User
+from users.models import User, Patient
 from users.serializers import (
     LoginMobileSerializer,
     LoginWebSerializer,
     RegisterSerializer,
     RegisterPatientSerializer,
     UserSerializer, DoctorProfileSerializer,
-    PatientProfileSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
+    PatientProfileSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetSerializer,
+    PatientSortingSerializer,
 )
 
 sensitive_post_parameters_m = method_decorator(
@@ -131,6 +134,18 @@ class PatientProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='patient')
     serializer_class = PatientProfileSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
+
+
+class PatientViewSet(viewsets.ModelViewSet):
+    queryset = Patient.objects.order_by("approximate_date_of_birth")
+    serializer_class = PatientSortingSerializer
+    http_method_names = ['get']
+
+
+class PatientProfileSortingViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.order_by('date_joined')
+    serializer_class = PatientProfileSerializer
+    http_method_names = ['get']
 
 
 class PasswordResetView(GenericAPIView):

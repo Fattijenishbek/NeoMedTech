@@ -1,5 +1,4 @@
 from datetime import date
-
 from dateutil import relativedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -10,6 +9,7 @@ from django.utils.http import urlsafe_base64_decode as uid_decoder
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from checklist.models import CheckList
 from .models import User, Doctor, Patient
 from .services import ModelSerializerWithValidate
 
@@ -34,7 +34,9 @@ class RegisterSerializer(ModelSerializerWithValidate):
         read_only_fields = ['is_active']
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 8},
-            "phone": {"max_length": 13, 'min_length': 13},
+            "phone": {"required": True, "max_length": 13},
+            "user_type": {"required": True},
+            "image": {"required": False}
         }
 
     def create(self, validated_data):
@@ -58,10 +60,24 @@ class RegisterSerializer(ModelSerializerWithValidate):
 class PatientSerializer(serializers.ModelSerializer):
     week_of_pregnancy = serializers.SerializerMethodField()
     month_of_pregnancy = serializers.SerializerMethodField()
+    doctor = serializers.SerializerMethodField()
 
     class Meta:
         model = Patient
-        exclude = ['user']
+        fields = [
+            "id",
+            "date_of_pregnancy",
+            'inn',
+            'approximate_date_of_birth',
+            "week_of_pregnancy",
+            "month_of_pregnancy",
+            'doctor',
+        ]
+        extra_kwargs = {
+            "date_of_pregnancy": {"required": True},
+        }
+        read_only_fields = ["approximate_date_of_birth"]
+
 
     def validate(self, data):
         inn = data.get('inn')
@@ -70,18 +86,21 @@ class PatientSerializer(serializers.ModelSerializer):
         return data
 
     def get_week_of_pregnancy(self, obj):
-        if obj.date_of_pregnancy:
-            days = abs(obj.date_of_pregnancy - date.today()).days
-            return days // 7
-        return None
+        days = abs(obj.date_of_pregnancy - date.today()).days
+        return days // 7
 
     def get_month_of_pregnancy(self, obj):
-        if obj.date_of_pregnancy:
-            pregnancy_date = obj.date_of_pregnancy
-            today = date.today()
-            delta = relativedelta.relativedelta(today, pregnancy_date)
-            return delta.months + delta.years * 12
-        return None
+        pregnancy_date = obj.date_of_pregnancy
+        today = date.today()
+        delta = relativedelta.relativedelta(today, pregnancy_date)
+        return delta.months + delta.years * 12
+
+    def get_doctor(self, obj):
+
+        patient_id = obj.id
+        checklist = CheckList.objects.filter(patient__id=patient_id).last()
+
+        return DoctorSimpleSerializer(checklist.doctor, many=False).data if checklist else None
 
 
 class RegisterPatientSerializer(ModelSerializerWithValidate):
@@ -103,7 +122,9 @@ class RegisterPatientSerializer(ModelSerializerWithValidate):
         ]
 
         extra_kwargs = {
+            "phone": {"required": True},
             "image": {"required": False},
+            'birth_date': {'required': True},
         }
         read_only_fields = ["is_active"]
 
@@ -141,21 +162,60 @@ class UserSerializer(ModelSerializerWithValidate):
             "email",
             "user_type",
         ]
-        read_only_fields = ["date_joined", 'user_type']
+        read_only_fields = ["date_joined"]
+
+
+class PatientSortingSerializer(serializers.ModelSerializer):
+    week_of_pregnancy = serializers.SerializerMethodField()
+    month_of_pregnancy = serializers.SerializerMethodField()
+    user = UserSerializer()
+
+    class Meta:
+        model = Patient
+        fields = [
+            "user",
+            "week_of_pregnancy",
+            "month_of_pregnancy",
+            "date_of_pregnancy",
+            "inn",
+            # "approximate_date_of_birth",
+        ]
+
+    def validate(self, data):
+        inn = data.get('inn')
+        if len(inn) != 14:
+            raise serializers.ValidationError('Your length of inn should be 14 characters!!!')
+        return data
+
+    def get_week_of_pregnancy(self, obj):
+        if obj.date_of_pregnancy is None:
+            return 0
+        else:
+            days = abs(obj.date_of_pregnancy - date.today()).days
+        return days // 7
+
+    def get_month_of_pregnancy(self, obj):
+        pregnancy_date = obj.date_of_pregnancy
+        today = date.today()
+        delta = relativedelta.relativedelta(today, pregnancy_date)
+        return delta.months + delta.years * 12
 
 
 class DoctorSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Doctor
-        fields = ['resign',
-                  'education',
-                  'professional_sphere',
-                  'work_experience',
-                  'achievements']
+        fields = [
+            'id',
+            'education',
+            'professional_sphere',
+            'work_experience',
+            'achievements',
+            # 'patients'
+        ]
 
 
-class DoctorProfileSerializer(ModelSerializerWithValidate):
-    doctor = DoctorSerializer()
+class DoctorSimpleProfileSerializer(ModelSerializerWithValidate):
 
     class Meta:
         model = User
@@ -171,7 +231,30 @@ class DoctorProfileSerializer(ModelSerializerWithValidate):
             "date_joined",
             "email",
             "user_type",
-            'doctor'
+        ]
+        read_only_fields = ["date_joined"]
+
+
+class DoctorProfileSerializer(ModelSerializerWithValidate):
+    doctor = DoctorSerializer()
+    patients = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "address",
+            "phone",
+            'image',
+            'age',
+            "birth_date",
+            "date_joined",
+            "email",
+            "user_type",
+            'doctor',
+            'patients',
         ]
         read_only_fields = ["date_joined"]
 
@@ -181,6 +264,50 @@ class DoctorProfileSerializer(ModelSerializerWithValidate):
         nested_data = validated_data.pop('doctor')
         nested_serializer.update(nested_instance, nested_data)
         return super(DoctorProfileSerializer, self).update(instance, validated_data)
+
+    def get_patients(self, obj):
+        doctor_id = Doctor.objects.get(user__id=obj.id).id
+        patient_ids = CheckList.objects.filter(doctor__id=doctor_id).values_list('patient_id', flat=True)
+        print(patient_ids)
+        patients = Patient.objects.filter(id__in=patient_ids)
+        return PatientSimpleSerializer(patients, many=True).data
+
+
+class DoctorSimpleSerializer(serializers.ModelSerializer):
+    user = DoctorSimpleProfileSerializer()
+
+    class Meta:
+        model = Doctor
+        fields = [
+            'id',
+            'education',
+            'professional_sphere',
+            'work_experience',
+            'achievements',
+            'user',
+        ]
+
+
+class PatientSimpleProfileSerializer(ModelSerializerWithValidate):
+    user_type = serializers.HiddenField(default='patient')
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "address",
+            "phone",
+            'image',
+            'email',
+            "birth_date",
+            "date_joined",
+            "user_type",
+            "patient",
+            'age',
+        ]
+        read_only_fields = ["date_joined"]
 
 
 class PatientProfileSerializer(ModelSerializerWithValidate):
@@ -200,8 +327,8 @@ class PatientProfileSerializer(ModelSerializerWithValidate):
             "birth_date",
             "date_joined",
             "user_type",
-            'patient',
-            'age'
+            "patient",
+            'age',
         ]
         read_only_fields = ["date_joined"]
 
@@ -211,6 +338,13 @@ class PatientProfileSerializer(ModelSerializerWithValidate):
         nested_data = validated_data.pop('patient')
         nested_serializer.update(nested_instance, nested_data)
         return super(PatientProfileSerializer, self).update(instance, validated_data)
+
+
+class PatientSimpleSerializer(serializers.ModelSerializer):
+    user = PatientSimpleProfileSerializer()
+    class Meta:
+        model = Patient
+        fields = '__all__'
 
 
 class PasswordResetSerializer(serializers.Serializer):

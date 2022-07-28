@@ -1,48 +1,51 @@
 from rest_framework import serializers
 
-from . import models
+from .models import (
+    CheckList,
+    Check,
+    MedCard,
+    Option,
+    Question,
+)
 
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Question
+        model = Question
         fields = '__all__'
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class OptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Answer
+        model = Option
         fields = '__all__'
 
 
-class AnswerListSerializer(AnswerSerializer):
-    patient = serializers.StringRelatedField()
-    question = serializers.StringRelatedField()
+class CheckSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Check
+        fields = '__all__'
+
+
+# class ListCheckSerializer(CheckSerializer):
+#     # a = QuestionSerializer(read_only=True, many=True)
+#     # b = OptionSerializer(read_only=True, many=True)
+#
+#     class Meta:
+#         model = Check
+#         fields = '__all__'
 
 
 class MedCardSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.MedCard
-        fields = '__all__'
-
-
-class QuestionAnswerSerializer(serializers.ModelSerializer):
-    question = serializers.StringRelatedField()
-
-    class Meta:
-        model = models.Answer
-        fields = ['answer', 'question']
-
-
-class MedCardListSerializer(MedCardSerializer):
-    answer = QuestionAnswerSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = models.MedCard
+        model = MedCard
         fields = '__all__'
 
 
 class CheckListSerializer(serializers.ModelSerializer):
+    # check = CheckSerializer(read_only=True, many=True)
+
     class Meta:
-        model = models.CheckList
+        model = CheckList
         fields = '__all__'
