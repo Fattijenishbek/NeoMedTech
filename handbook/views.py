@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from .models import Handbook, Todo, Essentials, Article
-from .serializers import HandBookSerializer, TodoSerializer, TodoListSerializer, EssentialsSerializer, ArticleSerializer
+from .models import Handbook, Todo, Essentials, Article, FAQ
+from .serializers import HandBookSerializer, TodoSerializer, TodoListSerializer, EssentialsSerializer, ArticleSerializer, FAQSerializer
 
 
 class HandBookViewSet(viewsets.ModelViewSet):
@@ -27,3 +27,8 @@ class EssentialsViewSet(viewsets.ModelViewSet):
 class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     queryset = Article.objects.all()
+
+
+class FAQViewSet(viewsets.ModelViewSet):
+    serializer_class = FAQSerializer
+    queryset = FAQ.objects.all()

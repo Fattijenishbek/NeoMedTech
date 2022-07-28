@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Todo, Essentials, Article, Handbook
+from .models import Todo, Essentials, Article, Handbook, FAQ
 
 
 class TodoSerializer(serializers.ModelSerializer):
@@ -28,4 +28,10 @@ class ArticleSerializer(serializers.ModelSerializer):
 class HandBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Handbook
+        fields = '__all__'
+
+
+class FAQSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQ
         fields = '__all__'
