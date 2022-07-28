@@ -2,24 +2,22 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from .models import (
-    Question,
+    Title,
     Option,
     MedCard,
     CheckList,
-    Check,
 )
 from .serializers import (
-    QuestionSerializer,
+    TitleSerializer,
     OptionSerializer,
-    CheckSerializer,
     MedCardSerializer,
     CheckListSerializer,
 )
 
 
-class QuestionView(viewsets.ModelViewSet):
-    serializer_class = QuestionSerializer
-    queryset = Question.objects.all()
+class TitleView(viewsets.ModelViewSet):
+    serializer_class = TitleSerializer
+    queryset = Title.objects.all()
 
 
 class OptionView(viewsets.ModelViewSet):
@@ -35,8 +33,3 @@ class MedCardView(viewsets.ModelViewSet):
 class CheckListView(viewsets.ModelViewSet):
     serializer_class = CheckListSerializer
     queryset = CheckList.objects.all()
-
-
-class CheckView(viewsets.ModelViewSet):
-    serializer_class = CheckSerializer
-    queryset = Check.objects.all()

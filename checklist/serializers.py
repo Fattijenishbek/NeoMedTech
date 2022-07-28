@@ -2,17 +2,10 @@ from rest_framework import serializers
 
 from .models import (
     CheckList,
-    Check,
     MedCard,
     Option,
-    Question,
+    Title,
 )
-
-
-class QuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Question
-        fields = '__all__'
 
 
 class OptionSerializer(serializers.ModelSerializer):
@@ -21,20 +14,17 @@ class OptionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CheckSerializer(serializers.ModelSerializer):
+class TitleSerializer(serializers.ModelSerializer):
+    answers = OptionSerializer(read_only=True, many=True)
 
     class Meta:
-        model = Check
-        fields = '__all__'
-
-
-# class ListCheckSerializer(CheckSerializer):
-#     # a = QuestionSerializer(read_only=True, many=True)
-#     # b = OptionSerializer(read_only=True, many=True)
-#
-#     class Meta:
-#         model = Check
-#         fields = '__all__'
+        model = Title
+        fields = [
+            'id',
+            'title',
+            'check_list',
+            'answers',
+        ]
 
 
 class MedCardSerializer(serializers.ModelSerializer):
@@ -44,8 +34,12 @@ class MedCardSerializer(serializers.ModelSerializer):
 
 
 class CheckListSerializer(serializers.ModelSerializer):
-    # check = CheckSerializer(read_only=True, many=True)
+    titles = TitleSerializer(read_only=True, many=True)
 
     class Meta:
         model = CheckList
-        fields = '__all__'
+        fields = [
+            'doctor',
+            'patient',
+            'titles',
+        ]
