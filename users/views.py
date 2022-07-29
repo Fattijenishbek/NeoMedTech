@@ -111,8 +111,6 @@ class LoginMobileView(generics.GenericAPIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # filter_backends = [filters.DjangoFilterBackend]
-    # filterset_fields = ('first_name', 'birth_date')
     http_method_names = ['get', 'put', 'patch', 'delete']
 
 

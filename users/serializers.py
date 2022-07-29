@@ -196,8 +196,7 @@ class DoctorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Doctor
-        fields = ['resign',
-                  'education',
+        fields = ['education',
                   'professional_sphere',
                   'work_experience',
                   'achievements',

@@ -9,7 +9,6 @@ from users.models import Patient
 class Todo(models.Model):
     task = models.CharField(max_length=255)
     done = models.BooleanField(default=False)
-    date = models.DateField(default=datetime.date.today)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -27,10 +26,10 @@ class Article(models.Model):
 
 class Handbook(models.Model):
     week = models.PositiveSmallIntegerField(default=1)
-    weight_of_baby = models.PositiveSmallIntegerField()
-    height = models.PositiveSmallIntegerField()
-    weight_of_mom = models.PositiveSmallIntegerField()
-    nutrition = models.TextField()
+    mom_weight = models.TextField()
+    weight = models.CharField(max_length=50)
+    height = models.CharField(max_length=50)
+    food = models.TextField()
     title = models.TextField()
     content = models.TextField()
     advices = models.TextField()

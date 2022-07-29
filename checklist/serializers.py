@@ -1,48 +1,45 @@
 from rest_framework import serializers
 
-from . import models
+from .models import (
+    CheckList,
+    MedCard,
+    Option,
+    Title,
+)
 
 
-class QuestionSerializer(serializers.ModelSerializer):
+class OptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Question
+        model = Option
         fields = '__all__'
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class TitleSerializer(serializers.ModelSerializer):
+    answers = OptionSerializer(read_only=True, many=True)
+
     class Meta:
-        model = models.Answer
-        fields = '__all__'
-
-
-class AnswerListSerializer(AnswerSerializer):
-    patient = serializers.StringRelatedField()
-    question = serializers.StringRelatedField()
+        model = Title
+        fields = [
+            'id',
+            'title',
+            'check_list',
+            'answers',
+        ]
 
 
 class MedCardSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.MedCard
-        fields = '__all__'
-
-
-class QuestionAnswerSerializer(serializers.ModelSerializer):
-    question = serializers.StringRelatedField()
-
-    class Meta:
-        model = models.Answer
-        fields = ['answer', 'question']
-
-
-class MedCardListSerializer(MedCardSerializer):
-    answer = QuestionAnswerSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = models.MedCard
+        model = MedCard
         fields = '__all__'
 
 
 class CheckListSerializer(serializers.ModelSerializer):
+    titles = TitleSerializer(read_only=True, many=True)
+
     class Meta:
-        model = models.CheckList
-        fields = '__all__'
+        model = CheckList
+        fields = [
+            'doctor',
+            'patient',
+            'titles',
+        ]

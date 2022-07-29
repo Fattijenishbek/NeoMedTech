@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -85,7 +86,6 @@ class Patient(models.Model):
 
 class Doctor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    resign = models.CharField(max_length=255)
     education = models.TextField()
     professional_sphere = models.TextField()
     work_experience = models.TextField()

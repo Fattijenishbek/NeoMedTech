@@ -1,32 +1,33 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from .models import Question, Answer, MedCard, CheckList
-from .serializers import QuestionSerializer, AnswerSerializer, AnswerListSerializer, MedCardSerializer, \
-    MedCardListSerializer, CheckListSerializer
+from .models import (
+    Title,
+    Option,
+    MedCard,
+    CheckList,
+)
+from .serializers import (
+    TitleSerializer,
+    OptionSerializer,
+    MedCardSerializer,
+    CheckListSerializer,
+)
 
 
-class QuestionView(viewsets.ModelViewSet):
-    serializer_class = QuestionSerializer
-    queryset = Question.objects.all()
+class TitleView(viewsets.ModelViewSet):
+    serializer_class = TitleSerializer
+    queryset = Title.objects.all()
 
 
-class AnswerView(viewsets.ModelViewSet):
-    serializer_class = AnswerSerializer
-    queryset = Answer.objects.all()
-
-    def list(self, request, *args, **kwargs):
-        serializer = AnswerListSerializer(Answer.objects.all(), many=True)
-        return Response(serializer.data)
+class OptionView(viewsets.ModelViewSet):
+    serializer_class = OptionSerializer
+    queryset = Option.objects.all()
 
 
 class MedCardView(viewsets.ModelViewSet):
     serializer_class = MedCardSerializer
     queryset = MedCard.objects.all()
-
-    def list(self, request, *args, **kwargs):
-        serializer = MedCardListSerializer(MedCard.objects.all(), many=True)
-        return Response(serializer.data)
 
 
 class CheckListView(viewsets.ModelViewSet):
