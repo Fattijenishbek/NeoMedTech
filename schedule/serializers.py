@@ -16,17 +16,6 @@ class TimeSlotsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TimeSlotsListSerializer(serializers.ModelSerializer):
-    times = serializers.SerializerMethodField()
-
-    class Meta:
-        model = TimeSlots
-        fields = ['id', 'times']
-
-    def get_times(self, obj):
-        return f'{obj.start} - {obj.end}'
-
-
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
@@ -79,7 +68,7 @@ class AppointmentListSerializer(AppointmentSerializer):
 
 
 class AppointmentGetTimesSerializer(serializers.ModelSerializer):
-    time_slots = TimeSlotsListSerializer()
+    time_slots = TimeSlotsSerializer()
 
     class Meta:
         model = Appointment
