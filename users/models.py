@@ -86,6 +86,7 @@ class Patient(models.Model):
         super().save(*args, **kwargs)
 
 
+
 class Doctor(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     education = models.TextField()

@@ -1,6 +1,8 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
-from django_filters import rest_framework as filters
+# from django_filters import rest_framework as filters
+from rest_framework.filters import OrderingFilter
+# from django_filters import DjangoFilterBackend as filters
 from rest_framework import generics, status, viewsets
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import GenericAPIView
@@ -18,7 +20,6 @@ from users.serializers import (
     PatientProfileSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetSerializer,
-    PatientSortingSerializer,
 )
 
 sensitive_post_parameters_m = method_decorator(
@@ -114,9 +115,6 @@ class LoginMobileView(generics.GenericAPIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_fields = ('first_name', 'birth_date')
-    http_method_names = ['get', 'put', 'patch', 'delete']
 
 
 class OfficeManagerViewSet(viewsets.ModelViewSet):
@@ -133,19 +131,10 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
 class PatientProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='patient')
     serializer_class = PatientProfileSerializer
+    filter_backends = [OrderingFilter]
+    # filterset_fields = ('first_name', 'birth_date')
+    ordering_fields = ['patient__id', 'patient__date_of_pregnancy', 'date_joined']
     http_method_names = ['get', 'put', 'patch', 'delete']
-
-
-class PatientViewSet(viewsets.ModelViewSet):
-    queryset = Patient.objects.order_by("approximate_date_of_birth")
-    serializer_class = PatientSortingSerializer
-    http_method_names = ['get']
-
-
-class PatientProfileSortingViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.order_by('date_joined')
-    serializer_class = PatientProfileSerializer
-    http_method_names = ['get']
 
 
 class PasswordResetView(GenericAPIView):

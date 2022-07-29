@@ -165,42 +165,6 @@ class UserSerializer(ModelSerializerWithValidate):
         read_only_fields = ["date_joined"]
 
 
-class PatientSortingSerializer(serializers.ModelSerializer):
-    week_of_pregnancy = serializers.SerializerMethodField()
-    month_of_pregnancy = serializers.SerializerMethodField()
-    user = UserSerializer()
-
-    class Meta:
-        model = Patient
-        fields = [
-            "user",
-            "week_of_pregnancy",
-            "month_of_pregnancy",
-            "date_of_pregnancy",
-            "inn",
-            # "approximate_date_of_birth",
-        ]
-
-    def validate(self, data):
-        inn = data.get('inn')
-        if len(inn) != 14:
-            raise serializers.ValidationError('Your length of inn should be 14 characters!!!')
-        return data
-
-    def get_week_of_pregnancy(self, obj):
-        if obj.date_of_pregnancy is None:
-            return 0
-        else:
-            days = abs(obj.date_of_pregnancy - date.today()).days
-        return days // 7
-
-    def get_month_of_pregnancy(self, obj):
-        pregnancy_date = obj.date_of_pregnancy
-        today = date.today()
-        delta = relativedelta.relativedelta(today, pregnancy_date)
-        return delta.months + delta.years * 12
-
-
 class DoctorSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -268,7 +232,6 @@ class DoctorProfileSerializer(ModelSerializerWithValidate):
     def get_patients(self, obj):
         doctor_id = Doctor.objects.get(user__id=obj.id).id
         patient_ids = CheckList.objects.filter(doctor__id=doctor_id).values_list('patient_id', flat=True)
-        print(patient_ids)
         patients = Patient.objects.filter(id__in=patient_ids)
         return PatientSimpleSerializer(patients, many=True).data
 
@@ -342,6 +305,7 @@ class PatientProfileSerializer(ModelSerializerWithValidate):
 
 class PatientSimpleSerializer(serializers.ModelSerializer):
     user = PatientSimpleProfileSerializer()
+
     class Meta:
         model = Patient
         fields = '__all__'
@@ -391,8 +355,6 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
     set_password_form_class = SetPasswordForm
 
-    def custom_validation(self, attrs):
-        pass
 
     def validate(self, attrs):
         self._errors = {}
