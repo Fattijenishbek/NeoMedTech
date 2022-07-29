@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from dateutil import relativedelta
 from django.conf import settings
@@ -63,6 +63,7 @@ class RegisterSerializer(ModelSerializerWithValidate):
 class PatientSerializer(serializers.ModelSerializer):
     week_of_pregnancy = serializers.SerializerMethodField()
     month_of_pregnancy = serializers.SerializerMethodField()
+    get_approximate_date_of_pregnancy = serializers.SerializerMethodField()
 
     class Meta:
         model = Patient
@@ -86,6 +87,13 @@ class PatientSerializer(serializers.ModelSerializer):
             today = date.today()
             delta = relativedelta.relativedelta(today, pregnancy_date)
             return delta.months + delta.years * 12
+        return None
+
+
+
+    def get_approximate_date_of_pregnancy(self, obj):
+        if obj.date_of_pregnancy:
+            return obj.date_of_pregnancy + timedelta(days=270)
         return None
 
 

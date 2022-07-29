@@ -1,8 +1,8 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
-from django_filters import rest_framework as filters
 from rest_framework import generics, status, viewsets
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -111,8 +111,8 @@ class LoginMobileView(generics.GenericAPIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_fields = ('first_name', 'birth_date')
+    # filter_backends = [filters.DjangoFilterBackend]
+    # filterset_fields = ('first_name', 'birth_date')
     http_method_names = ['get', 'put', 'patch', 'delete']
 
 
@@ -131,6 +131,13 @@ class PatientProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='patient')
     serializer_class = PatientProfileSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['id', 'first_name',
+                       'last_name', 'address',
+                       'phone', 'birth_date',
+                       'age',
+                       'patient__id', 'patient__date_of_pregnancy',
+                       'patient__inn', 'patient__doctor']
 
 
 class PasswordResetView(GenericAPIView):
