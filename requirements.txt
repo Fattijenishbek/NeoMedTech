@@ -16,10 +16,10 @@ django-cors-headers==3.5.0
 django-filter==22.1
 django-rest-passwordreset==1.2.1
 django-storages==1.12.3
-djangorestframework==3.11.0
+djangorestframework==3.12.4
 djangorestframework-simplejwt==4.4.0
 drf-writable-nested==0.6.4
-drf-yasg==1.17.1
+drf-yasg==1.20.0
 dropbox==11.33.0
 facebook-sdk==3.1.0
 Faker==4.1.0

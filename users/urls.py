@@ -12,8 +12,6 @@ from .views import (
     PatientProfileViewSet,
     PasswordResetView,
     PasswordResetConfirmView,
-    PatientProfileSortingViewSet,
-    PatientViewSet,
 )
 
 user_router = DefaultRouter()
@@ -21,8 +19,6 @@ user_router.register(r'all-users', UserViewSet, basename='all-users')
 user_router.register(r'office-manager', OfficeManagerViewSet, basename='office-manager')
 user_router.register(r'doctor-profile', DoctorProfileViewSet, basename='doctor-profile')
 user_router.register(r'patient-profile', PatientProfileViewSet, basename='patient-profile')
-user_router.register(r'patient', PatientViewSet, basename='patient')
-user_router.register(r'patient2', PatientProfileSortingViewSet, basename='patient2')
 
 urlpatterns = [
     path("register/", views.RegisterView.as_view()),
