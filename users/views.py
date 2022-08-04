@@ -2,21 +2,18 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, status, viewsets
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.filters import OrderingFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.models import User
-from users.serializers import (
-    LoginMobileSerializer,
-    LoginWebSerializer,
-    RegisterSerializer,
-    RegisterPatientSerializer,
-    UserSerializer, DoctorProfileSerializer,
-    PatientProfileSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
-)
+from .models import OfficeManager, Patient, Doctor, User
+from .api.serializers import AdminSerializer, OfficeManagerSerializer, \
+    PatientSerializer, DoctorSerializer, DoctorListSerializer, PatientListSerializer
+from .api.password_reset_serializers import PasswordResetSerializer, PasswordResetConfirmSerializer
+from .api.login_serializers import DoctorLoginWebSerializer, PatientLoginMobileSerializer, OfficeManagerLoginSerializer
+from .api.register_serializer import RegisterOfficeManagerSerializer, RegisterPatientSerializer, \
+    RegisterDoctorSerializer
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -25,38 +22,30 @@ sensitive_post_parameters_m = method_decorator(
 )
 
 
-class RegisterView(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class RegisterOfficeManagerView(generics.CreateAPIView):
+    serializer_class = RegisterOfficeManagerSerializer
+    queryset = OfficeManager.objects.all()
 
 
-class RegisterPatientView(generics.GenericAPIView):
+class RegisterPatientView(generics.CreateAPIView):
     serializer_class = RegisterPatientSerializer
-
-    def post(self, request):
-        serializer = RegisterPatientSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = Patient.objects.all()
 
 
-class LoginWebView(generics.GenericAPIView):
-    serializer_class = LoginWebSerializer
+class RegisterDoctorView(generics.CreateAPIView):
+    serializer_class = RegisterDoctorSerializer
+    queryset = Doctor.objects.all()
+
+
+class DoctorLoginWebView(generics.GenericAPIView):
+    serializer_class = DoctorLoginWebSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request):
         email = request.data['email']
         password = request.data["password"]
 
-        user = User.objects.get(email=email)
+        user = Doctor.objects.get(email=email)
         if user is None:
             raise AuthenticationFailed("User not found!")
 
@@ -81,13 +70,13 @@ class LoginWebView(generics.GenericAPIView):
 
 
 class LoginMobileView(generics.GenericAPIView):
-    serializer_class = LoginMobileSerializer
+    serializer_class = PatientLoginMobileSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request):
         phone = request.data['phone']
 
-        user = User.objects.filter(phone=phone).first()
+        user = Patient.objects.filter(phone=phone).first()
         if user is None:
             raise AuthenticationFailed("User not found!")
 
@@ -108,34 +97,38 @@ class LoginMobileView(generics.GenericAPIView):
         )
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    http_method_names = ['get', 'put', 'patch', 'delete']
-
-
 class OfficeManagerViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(user_type='office_manager')
-    serializer_class = UserSerializer
-
-
-class DoctorProfileViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(user_type='doctor')
-    serializer_class = DoctorProfileSerializer
+    queryset = OfficeManager.objects.all()
+    serializer_class = OfficeManagerSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
 
 
-class PatientProfileViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(user_type='patient')
-    serializer_class = PatientProfileSerializer
+class DoctorViewSet(viewsets.ModelViewSet):
+    queryset = Doctor.objects.all()
+    serializer_class = DoctorSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
-    filter_backends = [OrderingFilter]
-    ordering_fields = ['id', 'first_name',
-                       'last_name', 'address',
-                       'phone', 'birth_date',
-                       'age',
-                       'patient__id', 'patient__date_of_pregnancy',
-                       'patient__inn', 'patient__doctor']
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return DoctorSerializer
+        return DoctorListSerializer
+
+
+class PatientViewSet(viewsets.ModelViewSet):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+    http_method_names = ['get', 'put', 'patch', 'delete']
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return PatientSerializer
+        return PatientListSerializer
+
+
+class AdminViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(is_superuser=True)
+    serializer_class = AdminSerializer
+    http_method_names = ['get', 'put', 'patch', 'delete']
 
 
 class PasswordResetView(GenericAPIView):

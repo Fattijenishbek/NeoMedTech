@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_filters',
     'cloudinary_storage',
     'cloudinary',
+    'djoser'
 ]
 
 MIDDLEWARE = [
@@ -136,7 +137,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 
-AUTH_USER_MODEL = 'users.MainUser'
+AUTH_USER_MODEL = 'users.User'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -208,3 +209,10 @@ CLOUDINARY_STORAGE = {
 }
 CSRF_TRUSTED_ORIGINS = ["https://testmedtech.herokuapp.com"]
 CSRF_COOKIE_SECURE = False
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'accounts/register/users/reset_password/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'accounts/register/users/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'accounts/register/users/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {},
+}
