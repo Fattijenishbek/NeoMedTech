@@ -16,7 +16,7 @@ class Todo(models.Model):
 
 
 class Article(models.Model):
-    pictures = models.ImageField(upload_to="images/", blank=True, null=True)
+    pictures = models.FileField(upload_to="images/", blank=True, null=True)
     title = models.CharField(max_length=128)
     content = models.TextField()
 
