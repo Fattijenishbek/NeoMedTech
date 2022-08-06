@@ -75,8 +75,8 @@ class Patient(UserForInheritance):
 
 
 class Doctor(UserForInheritance):
-    resign = models.TextField()
-    education = models.TextField()
-    professional_sphere = models.TextField()
-    work_experience = models.TextField()
-    achievements = models.TextField()
+    resign = models.TextField(blank=True, null=True)
+    education = models.TextField(blank=True, null=True)
+    professional_sphere = models.TextField(blank=True, null=True)
+    work_experience = models.TextField(blank=True, null=True)
+    achievements = models.TextField(blank=True, null=True)

@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'django_filters',
     'cloudinary_storage',
     'cloudinary',
-    'djoser'
+    'djoser',
+    'rest_auth',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +74,7 @@ ROOT_URLCONF = 'medtech.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -156,6 +157,11 @@ REST_FRAMEWORK = {
     ],
     'DATETIME_FORMAT': '%d.%m.%Y',
     'DATE_FORMAT': '%d.%m.%Y',
+}
+
+REST_AUTH_SERIALIZERS = {
+    'PASSWORD_RESET_SERIALIZER':
+        'users.api.password_reset_serializers.PasswordResetSerializer',
 }
 
 SIMPLE_JWT = {

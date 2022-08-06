@@ -3,7 +3,9 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenRefreshView, TokenVerifyView, TokenObtainPairView
 )
-
+from rest_auth.views import (
+    PasswordResetView, PasswordResetConfirmView
+)
 from . import views
 from .views import (
     AdminViewSet,
@@ -39,4 +41,6 @@ urlpatterns = [
          name='token_verify'),
     # path("password_reset/", PasswordResetView.as_view(), name="password_reset"),
     # path("password_reset_confirm/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path("password_reset/", PasswordResetView.as_view(), name="password_reset"),
+    path("confirm-email/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="confirm-email"),
 ]
