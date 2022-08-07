@@ -3,15 +3,17 @@ from rest_framework.response import Response
 
 from .models import (
     Title,
-    Option,
+    Question,
     MedCard,
     CheckList,
+    Answer
 )
 from .serializers import (
     TitleSerializer,
-    OptionSerializer,
     MedCardSerializer,
+    QuestionSerializer,
     CheckListSerializer,
+    AnswerSerializer, TitleListSerializer, CheckListListSerializer,
 )
 
 
@@ -19,10 +21,15 @@ class TitleView(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return TitleListSerializer
+        return TitleSerializer
 
-class OptionView(viewsets.ModelViewSet):
-    serializer_class = OptionSerializer
-    queryset = Option.objects.all()
+class QuestionView(viewsets.ModelViewSet):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
+
 
 
 class MedCardView(viewsets.ModelViewSet):
@@ -33,3 +40,15 @@ class MedCardView(viewsets.ModelViewSet):
 class CheckListView(viewsets.ModelViewSet):
     serializer_class = CheckListSerializer
     queryset = CheckList.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CheckListListSerializer
+        return CheckListSerializer
+
+class AnswerView(viewsets.ModelViewSet):
+    serializer_class = AnswerSerializer
+    queryset = Answer.objects.all()
+
+
+

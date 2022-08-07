@@ -66,19 +66,11 @@ class RegisterOfficeManagerSerializer(serializers.ModelSerializer):
 
 
 class RegisterPatientSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True,
-        required=True,
-        help_text='Leave empty if no change needed',
-        style={'input_type': 'password', 'placeholder': 'Password'}
-    )
-
     class Meta:
         model = Patient
         fields = ['first_name',
                   'last_name',
                   'birth_date',
-                  'password',
                   'image',
                   'address',
                   'phone',
@@ -90,28 +82,6 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
             'inn': {'min_length': 14}
         }
         read_only_fields = ['is_active']
-
-    def validate(self, data):
-        # here data has all the fields which have validated values
-        # so we can create a User instance out of it
-        user = Patient(**data)
-
-        # get the password from the data
-        password = data.get('password')
-
-        errors = dict()
-        try:
-            # validate the password and catch the exception
-            validators.validate_password(password=password, user=user)
-
-        # the exception raised here is different than serializers.ValidationError
-        except exceptions.ValidationError as e:
-            errors['password'] = list(e.messages)
-
-        if errors:
-            raise serializers.ValidationError(errors)
-
-        return super(RegisterPatientSerializer, self).validate(data)
 
     def validate_phone(self, value):
         if not value[1:].isnumeric():
@@ -128,9 +98,7 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
         user = Patient(**validated_data)
-        user.set_password(password)
         user.save()
         return user
 

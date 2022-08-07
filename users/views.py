@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from checklist.models import CheckList
 from .models import OfficeManager, Patient, Doctor, User
 from .api.serializers import AdminSerializer, OfficeManagerSerializer, \
     PatientSerializer, DoctorSerializer, DoctorListSerializer, PatientListSerializer
@@ -21,7 +22,6 @@ sensitive_post_parameters_m = method_decorator(
     )
 )
 
-
 class RegisterOfficeManagerView(generics.CreateAPIView):
     serializer_class = RegisterOfficeManagerSerializer
     queryset = OfficeManager.objects.all()
@@ -30,6 +30,19 @@ class RegisterOfficeManagerView(generics.CreateAPIView):
 class RegisterPatientView(generics.CreateAPIView):
     serializer_class = RegisterPatientSerializer
     queryset = Patient.objects.all()
+
+    # def create(self, request, *args, **kwargs):
+    #     serializer = RegisterPatientSerializer(data=request.data)
+    #     patient = request.data['patient']
+    #     doctor = request.data['doctor']
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         # for i in range(1, 10):
+    #         #     CheckList.objects.get_or_create(patient=patient, doctor=doctor, month=i)
+    #
+    #         return Response(status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RegisterDoctorView(generics.CreateAPIView):
