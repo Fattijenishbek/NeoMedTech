@@ -6,14 +6,15 @@ from .models import (
     Question,
     MedCard,
     CheckList,
-    Answer
+    Answer, CheckListTemplate
 )
 from .serializers import (
     TitleSerializer,
     MedCardSerializer,
     QuestionSerializer,
     CheckListSerializer,
-    AnswerSerializer, TitleListSerializer, CheckListListSerializer,
+    AnswerSerializer, TitleListSerializer, CheckListListSerializer, CheckListTemplateSerializer,
+    CheckListTemplateListSerializer,
 )
 
 
@@ -42,9 +43,22 @@ class CheckListView(viewsets.ModelViewSet):
     queryset = CheckList.objects.all()
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action in ('retrieve', 'list'):
             return CheckListListSerializer
         return CheckListSerializer
+
+
+class CheckListTemplateView(viewsets.ModelViewSet):
+    serializer_class = CheckListTemplateSerializer
+    queryset = CheckListTemplate.objects.filter(id=1)
+    # http_method_names = ['get', 'put']
+
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return CheckListTemplateListSerializer
+        return CheckListTemplateSerializer
+
+
 
 class AnswerView(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer

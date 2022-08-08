@@ -13,6 +13,8 @@ from .views import (
     # PasswordResetView,
     # PasswordResetConfirmView,
     RegisterDoctorView,
+    LoginMobileView,
+    DoctorLoginWebView,
 )
 
 user_router = DefaultRouter()
@@ -20,13 +22,16 @@ user_router.register(r'admins', AdminViewSet, basename='admins')
 user_router.register(r'office-manager', OfficeManagerViewSet, basename='office-manager')
 user_router.register(r'doctor', DoctorViewSet, basename='doctor')
 user_router.register(r'patient', PatientViewSet, basename='patient')
+from rest_auth.views import (
+    PasswordResetView, PasswordResetConfirmView
+)
 
 urlpatterns = [
     path("register/doctor/", RegisterDoctorView.as_view()),
     path("register/patient/", views.RegisterPatientView.as_view()),
+    path("login/web/", DoctorLoginWebView.as_view()),
+    path("login/mob/", LoginMobileView.as_view()),
     path("register/office-manager/", views.RegisterOfficeManagerView.as_view()),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
-    path("refresh/", TokenRefreshView.as_view()),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
     path('jwt/token/',
          TokenObtainPairView.as_view(),
@@ -37,6 +42,6 @@ urlpatterns = [
     path('jwt/token/verify',
          TokenVerifyView.as_view(),
          name='token_verify'),
-    # path("password_reset/", PasswordResetView.as_view(), name="password_reset"),
-    # path("password_reset_confirm/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path("password_reset/", PasswordResetView.as_view(), name="password_reset"),
+    path("confirm-email/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="confirm-email"),
 ]

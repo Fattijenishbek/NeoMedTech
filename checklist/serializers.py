@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MedCard, CheckList, Answer, Question, Title
+from .models import MedCard, CheckList, Answer, Question, Title, CheckListTemplate
 
 
 class MedCardSerializer(serializers.ModelSerializer):
@@ -32,28 +32,50 @@ class CheckListSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    results = serializers.SerializerMethodField()
     class Meta:
         fields = '__all__'
         model = Answer
 
 
 class QuestionListSerializer(serializers.ModelSerializer):
-    answer = AnswerSerializer(many=True, read_only=True)
+    # answer = AnswerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question
         fields = '__all__'
 
 
-class TitleCheckListSerializer(TitleSerializer):
+class TitleCheckListSerializer(serializers.ModelSerializer):
     question = QuestionListSerializer(many=True)
 
+    class Meta:
+        model = Title
+        fields = ['id',
+                  'name',
+                  'question']
 
-class CheckListListSerializer(CheckListSerializer):
+
+class CheckListTemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckListTemplate
+        fields = ['title']
+
+
+class CheckListTemplateListSerializer(CheckListTemplateSerializer):
     title = TitleCheckListSerializer(many=True)
-    # answer = AnswerSerializer(many=True)
 
 
+class CheckListListSerializer(serializers.ModelSerializer):
+    answer = AnswerSerializer(many=True)
+    template = CheckListTemplateListSerializer()
 
-
+    class Meta:
+        model = CheckList
+        fields = ['id',
+                  'month',
+                  'doctor',
+                  'patient',
+                  'recommendations',
+                  'answer',
+                  'template',
+                  ]

@@ -10,6 +10,7 @@ checklist_router.register(r'answer', views.AnswerView, basename='answer')
 checklist_router.register(r'title', views.TitleView, basename='title')
 checklist_router.register(r'med-card', views.MedCardView, basename='med-card')
 checklist_router.register(r'check-list', views.CheckListView, basename='check-list')
+checklist_router.register(r'checklist-template', views.CheckListTemplateView, basename='checklist-template')
 
 
 urlpatterns = [

@@ -40,6 +40,7 @@ class GetFreeTimeViewSet(viewsets.ModelViewSet):
         appointment_serializer = AppointmentForBookingSerializer(data=request.data)
         if appointment_serializer.is_valid():
             doctor = request.data['doctor']
+            print(request.data['doctor'])
             date = request.data['date']
             if Holidays.objects.filter(doctor=doctor, day=date).exists():
                 return Response({'Response': f'This doctor is resting on this day.'})

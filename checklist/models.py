@@ -8,14 +8,18 @@ class CheckList(models.Model):
     ]
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
-    month = models.SmallIntegerField(choices=MONTH_CHOICES)
-    recommandations = models.TextField(blank=True)
-    title = models.ManyToManyField('Title')
+    month = models.SmallIntegerField(choices=MONTH_CHOICES, null=True)
+    recommendations = models.TextField(blank=True)
+    template = models.ForeignKey('CheckListTemplate', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f'Month: {self.month} ' \
                f'Doctor: {self.doctor} ' \
                f'Patient: {self.patient}'
+
+
+class CheckListTemplate(models.Model):
+    title = models.ManyToManyField('Title')
 
 
 class Title(models.Model):
