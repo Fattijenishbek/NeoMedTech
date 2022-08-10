@@ -3,6 +3,10 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenRefreshView, TokenVerifyView, TokenObtainPairView
 )
+from rest_auth.views import (
+    PasswordResetView, PasswordResetConfirmView
+)
+
 
 from . import views
 from .views import (
@@ -10,8 +14,6 @@ from .views import (
     OfficeManagerViewSet,
     DoctorViewSet,
     PatientViewSet,
-    # PasswordResetView,
-    # PasswordResetConfirmView,
     RegisterDoctorView,
     LoginMobileView,
     DoctorLoginWebView,
@@ -22,9 +24,6 @@ user_router.register(r'admins', AdminViewSet, basename='admins')
 user_router.register(r'office-manager', OfficeManagerViewSet, basename='office-manager')
 user_router.register(r'doctor', DoctorViewSet, basename='doctor')
 user_router.register(r'patient', PatientViewSet, basename='patient')
-from rest_auth.views import (
-    PasswordResetView, PasswordResetConfirmView
-)
 
 urlpatterns = [
     path("register/doctor/", RegisterDoctorView.as_view()),

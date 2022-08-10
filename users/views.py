@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from checklist.models import CheckList, CheckListTemplate, Answer
+from checklist.serializers import CheckListTemplateListSerializer
 from .models import OfficeManager, Patient, Doctor, User
 from .api.serializers import AdminSerializer, OfficeManagerSerializer, \
     PatientSerializer, DoctorSerializer, DoctorListSerializer, PatientListSerializer
@@ -33,17 +34,24 @@ class RegisterPatientView(generics.CreateAPIView):
     queryset = Patient.objects.all()
 
     def create(self, request, *args, **kwargs):
-
         serializer = RegisterPatientSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             doctor = request.data['doctor_field']
             patient = Patient.objects.latest('id').id if Patient.objects.exists() else 1
             template = CheckListTemplate.objects.latest('id')
-            for i in range(1, 10):
-                a = CheckList.objects.create(month=i, doctor_id=doctor, patient_id=patient, template=template)
+            answer_data = CheckListTemplateListSerializer(template).data
+            answers = []
+            for i in answer_data['title']:
+                for j in i['question']:
+                    answers.append(j['id'])
+            for month in range(1, 10):
+                a = CheckList.objects.create(month=month, doctor_id=doctor, patient_id=patient, template=template)
+                for question_id in answers:
+                    Answer.objects.create(question_id=question_id, check_list=a)
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RegisterDoctorView(generics.CreateAPIView):
