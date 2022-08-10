@@ -1,60 +1,59 @@
-from requests import Response
-from rest_framework import viewsets, status
+from rest_framework import viewsets, generics
+from rest_framework.response import Response
+
 from .models import (
     Title,
-    Option,
+    Question,
     MedCard,
     CheckList,
-    Pattern,
+    Answer
 )
 from .serializers import (
     TitleSerializer,
-    OptionSerializer,
     MedCardSerializer,
+    QuestionSerializer,
     CheckListSerializer,
-    # CheckListSerializerForList,
-    # PatternSerializerForList,
-    PatternSerializer,
+    AnswerSerializer, TitleListSerializer, CheckListListSerializer,
+)
+from users.permissions import (
+    IsSuperUserOrOfficeManager,
+    IsSuperUserOrOfficeManagerOrDoctor,
 )
 
 
 class TitleView(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManager,)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return TitleListSerializer
+        return TitleSerializer
 
 
-class OptionView(viewsets.ModelViewSet):
-    serializer_class = OptionSerializer
-    queryset = Option.objects.all()
+class QuestionView(viewsets.ModelViewSet):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManager,)
 
 
 class MedCardView(viewsets.ModelViewSet):
     serializer_class = MedCardSerializer
     queryset = MedCard.objects.all()
+    lookup_field = 'patient'
 
 
 class CheckListView(viewsets.ModelViewSet):
     serializer_class = CheckListSerializer
     queryset = CheckList.objects.all()
 
-    # def get_serializer_class(self):
-    #     if self.action == 'retrieve':
-    #         return CheckListSerializerForList
-    #     # elif self.action == 'update':
-    #     #     return CheckListSerializerForList
-    #     if self.action == 'list':
-    #         return CheckListSerializerForList
-    #     return CheckListSerializer
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CheckListListSerializer
+        return CheckListSerializer
 
-class PatternView(viewsets.ModelViewSet):
-    serializer_class = PatternSerializer
-    queryset = Pattern.objects.all()
 
-    # def get_serializer_class(self):
-    #     if self.action == 'retrieve':
-    #         return PatternSerializerForList
-    #     # elif self.action == 'update':
-    #     #     return CheckListSerializerForList
-    #     if self.action == 'list':
-    #         return PatternSerializerForList
-    #     return PatternSerializer
+class AnswerView(viewsets.ModelViewSet):
+    serializer_class = AnswerSerializer
+    queryset = Answer.objects.all()

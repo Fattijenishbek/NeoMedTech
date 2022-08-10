@@ -1,42 +1,46 @@
 from django.db import models
-
-
 from users.models import Patient, Doctor
 
 
 class CheckList(models.Model):
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    pattern = models.ForeignKey("Pattern", on_delete=models.CASCADE)
+    MONTH_CHOICES = [
+        (i, i) for i in range(1, 10)
+    ]
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
+    month = models.SmallIntegerField(choices=MONTH_CHOICES)
+    recommandations = models.TextField(blank=True)
+    title = models.ManyToManyField('Title')
 
     def __str__(self):
-        return f'{self.patient}'
-
-
-class Pattern(models.Model):
-    titles = models.ManyToManyField("Title")
-    recommendation = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.pk}'
+        return f'Month: {self.month} ' \
+               f'Doctor: {self.doctor} ' \
+               f'Patient: {self.patient}'
 
 
 class Title(models.Model):
-    title = models.CharField(max_length=255)
-    # check_list = models.ForeignKey(CheckList, on_delete=models.CASCADE, related_name='titles')
+    name = models.CharField(max_length=256)
+    question = models.ManyToManyField('Question')
 
     def __str__(self):
-        return f'{self.title}'
+        return f'{self.name}'
 
 
-class Option(models.Model):
-    title = models.ForeignKey(Title, on_delete=models.CASCADE, related_name="header")
-    question = models.TextField()
-    is_true = models.BooleanField(default=False)
-    answer = models.TextField(blank=True, null=True)
+class Question(models.Model):
+    name = models.CharField(max_length=256)
 
     def __str__(self):
-        return f'{self.question} - {self.answer}'
+        return f'{self.name}'
+
+
+class Answer(models.Model):
+    name = models.TextField(blank=True)
+    is_ok = models.BooleanField(default=False)
+    question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True, related_name='answer')
+    check_list = models.ForeignKey(CheckList, on_delete=models.SET_NULL, null=True, related_name='answer')
+
+    def __str__(self):
+        return f'{self.name} {self.question.name}'
 
 
 class MedCard(models.Model):

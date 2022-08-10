@@ -11,17 +11,15 @@ class TimeSlots(models.Model):
         return f'{self.start} - {self.end}'
 
 
-class WorkDays(models.Model):
-    week_name = models.CharField(max_length=30)
-    time_slots = models.ManyToManyField(TimeSlots)
-
-    def __str__(self):
-        return self.week_name
-
-
 class Schedule(models.Model):
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    work_days = models.ManyToManyField(WorkDays)
+    doctor = models.OneToOneField(Doctor, on_delete=models.CASCADE)
+    monday = models.ManyToManyField(TimeSlots, related_name='monday', blank=True)
+    tuesday = models.ManyToManyField(TimeSlots, related_name='tuesday', blank=True)
+    wednesday = models.ManyToManyField(TimeSlots, related_name='wednesday', blank=True)
+    thursday = models.ManyToManyField(TimeSlots, related_name='thursday', blank=True)
+    friday = models.ManyToManyField(TimeSlots, related_name='friday', blank=True)
+    saturday = models.ManyToManyField(TimeSlots, related_name='saturday', blank=True)
+    sunday = models.ManyToManyField(TimeSlots, related_name='sunday', blank=True)
 
     def __str__(self):
         return f'{self.doctor}'
@@ -33,7 +31,15 @@ class Appointment(models.Model):
     date = models.DateField()
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    time_slots = models.ManyToManyField(TimeSlots)
+    time_slots = models.ForeignKey(TimeSlots, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.doctor} {self.date} {self.patient}'
+
+
+class Holidays(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    day = models.DateField()
+
+    def __str__(self):
+        return f'{self.doctor} {self.day}'

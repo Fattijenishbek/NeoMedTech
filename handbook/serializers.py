@@ -2,15 +2,8 @@ from datetime import timedelta
 import datetime
 
 from rest_framework import serializers
-from drf_extra_fields.fields import Base64ImageField
-from users.models import Patient
-from .models import (
-    Todo,
-    Essentials,
-    Article,
-    Handbook,
-    Questions,
-)
+
+from .models import Todo, Essentials, Article, Handbook, FAQ
 
 
 class TodoSerializer(serializers.ModelSerializer):
@@ -30,8 +23,6 @@ class EssentialsSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    # pictures = Base64ImageField(required=False, allow_null=True)
-
     class Meta:
         model = Article
         fields = '__all__'
@@ -45,7 +36,7 @@ class HandBookSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_dates_of_advices(self, obj):
-        today1 = datetime.date.today()
+        today = datetime.date.today()
         list_of_month = [
             'января',
             'февраля',
@@ -60,16 +51,14 @@ class HandBookSerializer(serializers.ModelSerializer):
             'ноября',
             'декабря'
         ]
-        # date_of_pregnancy = Patient.objects.filter()
-        weekday = today1.weekday()
+        weekday = today.weekday()
         six = timedelta(days=6)
-        monday = today1 - datetime.timedelta(days=weekday % 7)
-        sunday = today1 - datetime.timedelta(days=weekday % 7) + six
-        print(today1)
-        return f"{monday.day}-{sunday.day} {list_of_month[today1.month - 1]}"
+        monday = today - datetime.timedelta(days=weekday % 7)
+        sunday = today - datetime.timedelta(days=weekday % 7) + six
+        return f"{monday.day}-{sunday.day} {list_of_month[today.month - 1]}"
 
 
-class QuestionsSerializer(serializers.ModelSerializer):
+class FAQSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Questions
+        model = FAQ
         fields = '__all__'
