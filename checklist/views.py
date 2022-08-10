@@ -1,5 +1,4 @@
 from rest_framework import viewsets
-from rest_framework.response import Response
 
 from .models import (
     Title,
@@ -13,8 +12,8 @@ from .serializers import (
     MedCardSerializer,
     QuestionSerializer,
     CheckListSerializer,
-    AnswerSerializer, TitleListSerializer, CheckListListSerializer, CheckListTemplateSerializer,
-    CheckListTemplateListSerializer,
+    AnswerSerializer, TitleListSerializer, CheckListListSerializer,
+    CheckListTemplateListSerializer, TitleCheckListSerializer, CheckListPutSerializer,
 )
 
 
@@ -25,12 +24,13 @@ class TitleView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return TitleListSerializer
-        return TitleSerializer
+        return TitleCheckListSerializer
+
+
 
 class QuestionView(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
-
 
 
 class MedCardView(viewsets.ModelViewSet):
@@ -42,27 +42,27 @@ class CheckListView(viewsets.ModelViewSet):
     serializer_class = CheckListSerializer
     queryset = CheckList.objects.all()
 
+    def get_queryset(self):
+        queryset = CheckList.objects.all()
+        patient = self.request.query_params.get('patient', None)
+        if patient:
+            queryset = queryset.filter(patient_id=int(patient))
+        return queryset
+
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
             return CheckListListSerializer
+        elif self.action == 'update':
+            return CheckListPutSerializer
         return CheckListSerializer
 
 
 class CheckListTemplateView(viewsets.ModelViewSet):
-    serializer_class = CheckListTemplateSerializer
-    queryset = CheckListTemplate.objects.filter(id=1)
-    # http_method_names = ['get', 'put']
-
-    def get_serializer_class(self):
-        if self.action in ['retrieve', 'list']:
-            return CheckListTemplateListSerializer
-        return CheckListTemplateSerializer
-
+    serializer_class = CheckListTemplateListSerializer
+    queryset = CheckListTemplate.objects.all()
+    http_method_names = ['get', 'post']
 
 
 class AnswerView(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
     queryset = Answer.objects.all()
-
-
-
