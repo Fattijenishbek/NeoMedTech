@@ -32,8 +32,15 @@ class SuperUser(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+
+    user_type_choices = [
+        ('patient', 'patient'),
+        ('doctor', 'doctor'),
+        ('office_manager', 'office_manager'),
+    ]
     username = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=True)
+    user_type = models.CharField(max_length=255, choices=user_type_choices, default='patient', null=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)

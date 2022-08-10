@@ -58,9 +58,6 @@ class HandBookSerializer(serializers.ModelSerializer):
         return f"{monday.day}-{sunday.day} {list_of_month[today.month - 1]}"
 
 
-
-
-
 class FAQSerializer(serializers.ModelSerializer):
     class Meta:
         model = FAQ

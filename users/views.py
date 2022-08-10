@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+import datetime as agahan
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, status, viewsets
@@ -7,14 +9,35 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from checklist.models import CheckList
+# from checklist.models import CheckList
 from .models import OfficeManager, Patient, Doctor, User
-from .api.serializers import AdminSerializer, OfficeManagerSerializer, \
-    PatientSerializer, DoctorSerializer, DoctorListSerializer, PatientListSerializer
-from .api.password_reset_serializers import PasswordResetSerializer, PasswordResetConfirmSerializer
-from .api.login_serializers import DoctorLoginWebSerializer, PatientLoginMobileSerializer, OfficeManagerLoginSerializer
-from .api.register_serializer import RegisterOfficeManagerSerializer, RegisterPatientSerializer, \
-    RegisterDoctorSerializer
+from .api.serializers import (
+    AdminSerializer,
+    OfficeManagerSerializer,
+    PatientSerializer,
+    DoctorSerializer,
+    DoctorListSerializer,
+    PatientListSerializer,
+)
+from .api.password_reset_serializers import (
+    PasswordResetSerializer,
+    PasswordResetConfirmSerializer,
+)
+from .api.login_serializers import (
+    DoctorLoginWebSerializer,
+    PatientLoginMobileSerializer,
+    OfficeManagerLoginSerializer,
+)
+from .api.register_serializer import (
+    RegisterOfficeManagerSerializer,
+    RegisterPatientSerializer,
+    RegisterDoctorSerializer,
+)
+from .permissions import (
+    IsSuperUser,
+    IsSuperUserOrOfficeManager,
+    IsSuperUserOrOfficeManagerOrDoctor,
+)
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -22,14 +45,17 @@ sensitive_post_parameters_m = method_decorator(
     )
 )
 
+
 class RegisterOfficeManagerView(generics.CreateAPIView):
     serializer_class = RegisterOfficeManagerSerializer
     queryset = OfficeManager.objects.all()
+    permission_classes = (IsSuperUser,)
 
 
 class RegisterPatientView(generics.CreateAPIView):
     serializer_class = RegisterPatientSerializer
     queryset = Patient.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManagerOrDoctor, )
 
     # def create(self, request, *args, **kwargs):
     #     serializer = RegisterPatientSerializer(data=request.data)
@@ -44,10 +70,10 @@ class RegisterPatientView(generics.CreateAPIView):
     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class RegisterDoctorView(generics.CreateAPIView):
     serializer_class = RegisterDoctorSerializer
     queryset = Doctor.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManager, )
 
 
 class DoctorLoginWebView(generics.GenericAPIView):
@@ -59,6 +85,38 @@ class DoctorLoginWebView(generics.GenericAPIView):
         password = request.data["password"]
 
         user = Doctor.objects.get(email=email)
+        if user is None:
+            raise AuthenticationFailed("User not found!")
+
+        if not user.check_password(password):
+            raise AuthenticationFailed("Incorrect password!")
+
+        refresh = RefreshToken.for_user(user)
+
+        is_superuser = user.is_superuser
+        user_type = user.user_type
+        id = user.id
+        return Response(
+            {
+                'user_id': id,
+                "status": "You successfully logged in",
+                "is_superuser": is_superuser,
+                "user_type": user_type,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+        )
+
+
+class OfficeManagerLoginView(generics.GenericAPIView):
+    serializer_class = OfficeManagerLoginSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        email = request.data['email']
+        password = request.data["password"]
+
+        user = OfficeManager.objects.get(email=email)
         if user is None:
             raise AuthenticationFailed("User not found!")
 
@@ -94,14 +152,16 @@ class LoginMobileView(generics.GenericAPIView):
             raise AuthenticationFailed("User not found!")
 
         refresh = RefreshToken.for_user(user)
-
+        id = user.id
         is_superuser = user.is_superuser
         user_type = user.user_type
-        id = user.id
+        expires_in = refresh.access_token.lifetime.total_seconds()
+        expires_day = agahan.datetime.now() + timedelta(seconds=expires_in)
         return Response(
             {
                 'user_id': id,
                 "status": "You successfully logged in",
+                "expires_day": expires_day,
                 "is_superuser": is_superuser,
                 "user_type": user_type,
                 "refresh": str(refresh),
