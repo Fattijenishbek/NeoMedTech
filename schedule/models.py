@@ -12,7 +12,7 @@ class TimeSlots(models.Model):
 
 
 class Schedule(models.Model):
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    doctor = models.OneToOneField(Doctor, on_delete=models.CASCADE)
     monday = models.ManyToManyField(TimeSlots, related_name='monday', blank=True)
     tuesday = models.ManyToManyField(TimeSlots, related_name='tuesday', blank=True)
     wednesday = models.ManyToManyField(TimeSlots, related_name='wednesday', blank=True)

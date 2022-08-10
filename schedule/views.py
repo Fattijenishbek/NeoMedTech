@@ -2,6 +2,7 @@ import itertools
 from datetime import datetime
 
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .models import (
@@ -17,13 +18,21 @@ from .serializers import (
     TimeSlotsSerializer, AppointmentForBookingSerializer,
     AppointmentGetTimesSerializer,
     HolidaySerializer,
-    ScheduleForBookingSerializer
+    ScheduleForBookingSerializer,
+)
+from users.permissions import (
+    IsSuperUser,
+    IsSuperUserOrOfficeManager,
+    IsSuperUserOrOfficeManagerOrDoctor,
+    IsPatientOrIsDoctor
 )
 
 
 class ScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleSerializer
     queryset = Schedule.objects.all()
+    lookup_field = 'doctor'
+    permission_classes = (IsSuperUserOrOfficeManager, )
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -34,6 +43,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 class GetFreeTimeViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentForBookingSerializer
     queryset = Appointment.objects.all()
+    permission_classes = (AllowAny, )
     http_method_names = ['post']
 
     def create(self, request, *args, **kwargs):
@@ -70,11 +80,13 @@ class GetFreeTimeViewSet(viewsets.ModelViewSet):
 class TimeSlotsView(viewsets.ModelViewSet):
     serializer_class = TimeSlotsSerializer
     queryset = TimeSlots.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManager, )
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
     queryset = Appointment.objects.all()
+    permission_classes = (IsPatientOrIsDoctor, )
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -85,3 +97,4 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 class HolidayViewSet(viewsets.ModelViewSet):
     serializer_class = HolidaySerializer
     queryset = Holidays.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManager, )

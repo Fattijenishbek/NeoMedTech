@@ -33,7 +33,7 @@ class HandBookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Handbook
-        fields = '__all__'
+        exclude = ['id']
 
     def get_dates_of_advices(self, obj):
         today = datetime.date.today()
@@ -56,9 +56,6 @@ class HandBookSerializer(serializers.ModelSerializer):
         monday = today - datetime.timedelta(days=weekday % 7)
         sunday = today - datetime.timedelta(days=weekday % 7) + six
         return f"{monday.day}-{sunday.day} {list_of_month[today.month - 1]}"
-
-
-
 
 
 class FAQSerializer(serializers.ModelSerializer):

@@ -158,14 +158,12 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%d.%m.%Y',
     'DATE_FORMAT': '%d.%m.%Y',
 }
-
 REST_AUTH_SERIALIZERS = {
     'PASSWORD_RESET_SERIALIZER':
         'users.api.password_reset_serializers.PasswordResetSerializer',
 }
-
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -215,10 +213,3 @@ CLOUDINARY_STORAGE = {
 }
 CSRF_TRUSTED_ORIGINS = ["https://testmedtech.herokuapp.com"]
 CSRF_COOKIE_SECURE = False
-DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'accounts/register/users/reset_password/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': 'accounts/register/users/username/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': 'accounts/register/users/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
-    'SERIALIZERS': {},
-}

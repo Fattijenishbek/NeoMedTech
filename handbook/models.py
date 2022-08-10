@@ -25,7 +25,7 @@ class Article(models.Model):
 
 
 class Handbook(models.Model):
-    week = models.PositiveSmallIntegerField(default=1)
+    week = models.PositiveSmallIntegerField(default=1, unique=True)
     mom_weight = models.TextField()
     weight = models.CharField(max_length=50)
     height = models.CharField(max_length=50)
