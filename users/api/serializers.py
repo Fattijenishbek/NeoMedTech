@@ -8,6 +8,7 @@ class PatientListSerializer(serializers.ModelSerializer):
     week_of_pregnancy = serializers.SerializerMethodField()
     month_of_pregnancy = serializers.SerializerMethodField()
     approximate_date_of_pregnancy = serializers.SerializerMethodField()
+    age = serializers.SerializerMethodField()
 
     class Meta:
         model = Patient
@@ -15,6 +16,7 @@ class PatientListSerializer(serializers.ModelSerializer):
                   'first_name',
                   'last_name',
                   'birth_date',
+                  'age',
                   'image',
                   'address',
                   'phone',
@@ -25,6 +27,11 @@ class PatientListSerializer(serializers.ModelSerializer):
                   'approximate_date_of_pregnancy',
                   'doctor_field'
                   ]
+
+    def get_age(self, obj):
+        today = date.today()
+        return today.year - obj.birth_date.year - (
+                (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
 
     def validate(self, data):
         inn = data.get('inn')
@@ -54,12 +61,15 @@ class PatientListSerializer(serializers.ModelSerializer):
 
 
 class DoctorListSerializer(serializers.ModelSerializer):
+    age = serializers.SerializerMethodField()
+
     class Meta:
         model = Doctor
         fields = ['id',
                   'first_name',
                   'last_name',
                   'birth_date',
+                  'age',
                   'image',
                   'address',
                   'phone',
@@ -71,6 +81,11 @@ class DoctorListSerializer(serializers.ModelSerializer):
                   'achievements',
                   'patient'
                   ]
+
+    def get_age(self, obj):
+        today = date.today()
+        return today.year - obj.birth_date.year - (
+                (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
 
 
 class PatientSerializer(PatientListSerializer):
