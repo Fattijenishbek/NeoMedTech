@@ -8,6 +8,7 @@ from .serializers import HandBookSerializer, TodoSerializer, TodoListSerializer,
 class HandBookViewSet(viewsets.ModelViewSet):
     serializer_class = HandBookSerializer
     queryset = Handbook.objects.all()
+    lookup_field = 'week'
 
 
 class TodoViewSet(viewsets.ModelViewSet):

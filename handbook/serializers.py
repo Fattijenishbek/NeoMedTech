@@ -33,7 +33,7 @@ class HandBookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Handbook
-        fields = '__all__'
+        exclude = ['id']
 
     def get_dates_of_advices(self, obj):
         today = datetime.date.today()
