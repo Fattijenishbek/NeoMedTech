@@ -97,17 +97,24 @@ class DoctorSerializer(DoctorListSerializer):
 
 
 class OfficeManagerSerializer(serializers.ModelSerializer):
+    age = serializers.SerializerMethodField()
     class Meta:
         model = OfficeManager
         fields = ['id',
                   'first_name',
                   'last_name',
                   'birth_date',
+                  'age',
                   'email',
                   'image',
                   'address',
                   'phone',
                   ]
+
+    def get_age(self, obj):
+        today = date.today()
+        return today.year - obj.birth_date.year - (
+                (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
 
 
 class AdminSerializer(serializers.ModelSerializer):
