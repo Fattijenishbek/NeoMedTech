@@ -19,11 +19,10 @@ class TimeSlotsSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = '__all__'
+        exclude = ['id']
 
 
 class ScheduleListSerializer(ScheduleSerializer):
-    doctor = serializers.StringRelatedField()
     monday = serializers.StringRelatedField(many=True)
     tuesday = serializers.StringRelatedField(many=True)
     wednesday = serializers.StringRelatedField(many=True)
@@ -53,7 +52,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
 class AppointmentForBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
-        fields = ['doctor', 'patient', 'date']
+        fields = ['doctor', 'date']
 
     def validate_date(self, value):
         if value < datetime.date.today():
