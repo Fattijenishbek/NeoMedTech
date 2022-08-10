@@ -2,20 +2,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, status, viewsets
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
+import datetime
 from checklist.models import CheckList, CheckListTemplate, Answer
 from checklist.serializers import CheckListTemplateListSerializer
 from .models import OfficeManager, Patient, Doctor, User
-from .api.serializers import AdminSerializer, OfficeManagerSerializer, \
-    PatientSerializer, DoctorSerializer, DoctorListSerializer, PatientListSerializer
-from .api.password_reset_serializers import PasswordResetSerializer
-from .api.login_serializers import DoctorLoginWebSerializer, PatientLoginMobileSerializer, OfficeManagerLoginSerializer
-from .api.register_serializer import RegisterOfficeManagerSerializer, RegisterPatientSerializer, \
-    RegisterDoctorSerializer
+
 from .api.serializers import (
     AdminSerializer,
     OfficeManagerSerializer,
@@ -23,10 +17,6 @@ from .api.serializers import (
     DoctorSerializer,
     DoctorListSerializer,
     PatientListSerializer,
-)
-from .api.password_reset_serializers import (
-    PasswordResetSerializer,
-    PasswordResetConfirmSerializer,
 )
 from .api.login_serializers import (
     DoctorLoginWebSerializer,
@@ -54,7 +44,7 @@ sensitive_post_parameters_m = method_decorator(
 class RegisterOfficeManagerView(generics.CreateAPIView):
     serializer_class = RegisterOfficeManagerSerializer
     queryset = OfficeManager.objects.all()
-    permission_classes = (IsSuperUser,)
+    permission_classes = (IsAuthenticated, IsSuperUser,)
 
 
 class RegisterPatientView(generics.CreateAPIView):
@@ -85,7 +75,7 @@ class RegisterPatientView(generics.CreateAPIView):
 class RegisterDoctorView(generics.CreateAPIView):
     serializer_class = RegisterDoctorSerializer
     queryset = Doctor.objects.all()
-    permission_classes = (IsSuperUserOrOfficeManager, )
+    permission_classes = (IsAuthenticated, IsSuperUserOrOfficeManager, )
 
 
 class DoctorLoginWebView(generics.GenericAPIView):
@@ -168,7 +158,7 @@ class LoginMobileView(generics.GenericAPIView):
         is_superuser = user.is_superuser
         user_type = user.user_type
         expires_in = refresh.access_token.lifetime.total_seconds()
-        expires_day = agahan.datetime.now() + timedelta(seconds=expires_in)
+        expires_day = datetime.datetime.now() + datetime.timedelta(seconds=expires_in)
         return Response(
             {
                 'user_id': id,

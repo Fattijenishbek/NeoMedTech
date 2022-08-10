@@ -5,14 +5,15 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
     TokenObtainPairView
 )
+from rest_auth.views import (
+    PasswordResetView, PasswordResetConfirmView
+)
 from . import views
 from .views import (
     AdminViewSet,
     OfficeManagerViewSet,
     DoctorViewSet,
     PatientViewSet,
-    # PasswordResetView,
-    # PasswordResetConfirmView,
     RegisterDoctorView,
     DoctorLoginWebView,
     LoginMobileView,
