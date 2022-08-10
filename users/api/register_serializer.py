@@ -5,6 +5,7 @@ from users.models import OfficeManager, Patient, Doctor
 
 
 class RegisterOfficeManagerSerializer(serializers.ModelSerializer):
+    user_type = serializers.HiddenField(default='office_manager')
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -13,14 +14,16 @@ class RegisterOfficeManagerSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = OfficeManager
-        fields = ['first_name',
-                  'last_name',
-                  'birth_date',
-                  'password',
-                  'email',
-                  'image',
-                  'address',
-                  'phone',
+        fields = [
+            'first_name',
+            'last_name',
+            'birth_date',
+            'password',
+            'email',
+            'image',
+            'address',
+            'phone',
+            'user_type',
                   ]
 
     def validate(self, data):
@@ -66,6 +69,7 @@ class RegisterOfficeManagerSerializer(serializers.ModelSerializer):
 
 
 class RegisterPatientSerializer(serializers.ModelSerializer):
+    user_type = serializers.HiddenField(default='patient')
     class Meta:
         model = Patient
         fields = ['first_name',
@@ -76,7 +80,9 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
                   'phone',
                   'date_of_pregnancy',
                   'inn',
+                  'user_type',
                   'doctor_field'
+
                   ]
         extra_kwargs = {
             'inn': {'min_length': 14}
@@ -104,6 +110,7 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
 
 
 class RegisterDoctorSerializer(serializers.ModelSerializer):
+    user_type = serializers.HiddenField(default='doctor')
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -122,6 +129,7 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
                   'address',
                   'phone',
                   'email',
+                  'user_type',
                   'resign',
                   'education',
                   'professional_sphere',
@@ -132,7 +140,7 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
     def validate(self, data):
         # here data has all the fields which have validated values
         # so we can create a User instance out of it
-        print(data)
+        # print(data)
         user = Doctor(**data)
 
         # get the password from the data

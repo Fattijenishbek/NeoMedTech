@@ -15,11 +15,16 @@ from .serializers import (
     AnswerSerializer, TitleListSerializer, CheckListListSerializer,
     CheckListTemplateListSerializer, TitleCheckListSerializer, CheckListPutSerializer,
 )
+from users.permissions import (
+    IsSuperUserOrOfficeManager,
+    IsSuperUserOrOfficeManagerOrDoctor,
+)
 
 
 class TitleView(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManager,)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -28,14 +33,17 @@ class TitleView(viewsets.ModelViewSet):
 
 
 
+
 class QuestionView(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
+    permission_classes = (IsSuperUserOrOfficeManager,)
 
 
 class MedCardView(viewsets.ModelViewSet):
     serializer_class = MedCardSerializer
     queryset = MedCard.objects.all()
+    lookup_field = 'patient'
 
 
 class CheckListView(viewsets.ModelViewSet):
@@ -55,6 +63,7 @@ class CheckListView(viewsets.ModelViewSet):
         elif self.action == 'update':
             return CheckListPutSerializer
         return CheckListSerializer
+
 
 
 class CheckListTemplateView(viewsets.ModelViewSet):

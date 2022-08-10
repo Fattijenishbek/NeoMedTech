@@ -5,7 +5,10 @@ from .models import MedCard, CheckList, Answer, Question, Title, CheckListTempla
 class MedCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedCard
-        fields = '__all__'
+        fields = [
+            'patient',
+            'information',
+        ]
 
 
 class QuestionSerializer(serializers.ModelSerializer):

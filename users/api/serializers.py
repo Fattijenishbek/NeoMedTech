@@ -25,6 +25,7 @@ class PatientListSerializer(serializers.ModelSerializer):
                   'week_of_pregnancy',
                   'month_of_pregnancy',
                   'approximate_date_of_pregnancy',
+                  'user_type',
                   'doctor_field'
                   ]
 
@@ -74,12 +75,13 @@ class DoctorListSerializer(serializers.ModelSerializer):
                   'address',
                   'phone',
                   'email',
+                  'user_type',
                   'resign',
                   'education',
                   'professional_sphere',
                   'work_experience',
                   'achievements',
-                  'patient'
+                  'patient',
                   ]
 
     def get_age(self, obj):
@@ -109,6 +111,7 @@ class OfficeManagerSerializer(serializers.ModelSerializer):
                   'image',
                   'address',
                   'phone',
+                  'user_type',
                   ]
 
     def get_age(self, obj):

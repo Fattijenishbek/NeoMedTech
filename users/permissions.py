@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsSuperUser(BasePermission):
@@ -8,24 +8,40 @@ class IsSuperUser(BasePermission):
 
 
 class IsPatient(BasePermission):
-
-    message = "Sorry but access only for patients"
-
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.user_type == "patient")
-
-
-class IsDoctor(BasePermission):
-
-    message = "Sorry but access only for doctors"
+    message = 'Permission denied'
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.user_type == "doctor")
+        return bool(request.user.is_anonymous
+                    or request.user.user_type == "patient")
 
 
-class IsOfficeManager(BasePermission):
-
-    message = "Sorry but access only for office manager"
+class IsSuperUserOrOfficeManager(BasePermission):
+    message = 'Permission denied'
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.user_type == "office_manager")
+        return bool(request.method in SAFE_METHODS or request.user and request.user.user_type == 'office_manager' or
+                    request.user and request.user.is_superuser)
+
+
+class IsSuperUserOrOfficeManagerOrDoctor(BasePermission):
+    message = 'Permission denied'
+
+    def has_permission(self, request, view):
+        return bool(request.method in SAFE_METHODS or request.user and request.user.user_type == 'office_manager' or
+                    request.user and request.user.is_superuser or
+                    request.user and request.user.user_type == 'doctor')
+
+
+class IsPatientOrIsDoctor(BasePermission):
+
+    message = 'Permission denied'
+
+    edit_methods = ["DELETE", ]
+
+    def has_permission(self, request, view):
+        return bool(request.method in SAFE_METHODS or request.user and request.user.user_type == 'patient'
+                    and request.method not in self.edit_methods or
+                    request.user and request.user.user_type == 'office_manager' and
+                    request.method in self.edit_methods or
+                    request.user and request.user.user_type == 'doctor'
+                    and request.method not in self.edit_methods)
