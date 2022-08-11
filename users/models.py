@@ -27,20 +27,15 @@ class SuperUser(BaseUserManager):
         user.set_password(password)
         user.is_superuser = True
         user.is_staff = True
+        user.user_type = 'admin'
         user.save()
         return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
-    user_type_choices = [
-        ('patient', 'patient'),
-        ('doctor', 'doctor'),
-        ('office_manager', 'office_manager'),
-    ]
     username = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=True)
-    user_type = models.CharField(max_length=255, choices=user_type_choices, default='patient', null=True)
+    user_type = models.CharField(max_length=255, null=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -70,6 +65,7 @@ class UserForInheritance(User):
 
     class Meta:
         abstract = True
+
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
