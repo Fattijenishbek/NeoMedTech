@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import (
     Title,
     Question,
@@ -32,8 +32,6 @@ class TitleView(viewsets.ModelViewSet):
         return TitleCheckListSerializer
 
 
-
-
 class QuestionView(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
@@ -49,6 +47,8 @@ class MedCardView(viewsets.ModelViewSet):
 class CheckListView(viewsets.ModelViewSet):
     serializer_class = CheckListSerializer
     queryset = CheckList.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ['patient', 'month']
 
     def get_queryset(self):
         queryset = CheckList.objects.all()
@@ -63,7 +63,6 @@ class CheckListView(viewsets.ModelViewSet):
         elif self.action == 'update':
             return CheckListPutSerializer
         return CheckListSerializer
-
 
 
 class CheckListTemplateView(viewsets.ModelViewSet):

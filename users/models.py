@@ -53,7 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = SuperUser()
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.email}"
 
     class Meta:
         verbose_name = 'System user'
