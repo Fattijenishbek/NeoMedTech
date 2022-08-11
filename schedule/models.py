@@ -31,7 +31,7 @@ class Appointment(models.Model):
     date = models.DateField()
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    time_slots = models.ForeignKey(TimeSlots, on_delete=models.CASCADE)
+    time_slots = models.ForeignKey(TimeSlots, on_delete=models.CASCADE, related_name='appointment')
 
     def __str__(self):
         return f'{self.doctor} {self.date} {self.patient}'
