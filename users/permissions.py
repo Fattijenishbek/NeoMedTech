@@ -11,8 +11,7 @@ class IsPatient(BasePermission):
     message = 'Permission denied'
 
     def has_permission(self, request, view):
-        return bool(request.user.is_anonymous
-                    or request.user.user_type == "patient")
+        return bool(request.user.user_type == "patient")
 
 
 class IsSuperUserOrOfficeManager(BasePermission):
