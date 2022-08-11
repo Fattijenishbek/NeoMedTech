@@ -15,9 +15,8 @@ from .views import (
     DoctorViewSet,
     PatientViewSet,
     RegisterDoctorView,
-    DoctorLoginWebView,
+    PersonalLoginWebView,
     LoginMobileView,
-    OfficeManagerLoginView,
 )
 
 user_router = DefaultRouter()
@@ -30,9 +29,8 @@ urlpatterns = [
     path("register/doctor/", RegisterDoctorView.as_view()),
     path("register/patient/", views.RegisterPatientView.as_view()),
     path("register/office-manager/", views.RegisterOfficeManagerView.as_view()),
-    path("login/doctor/", DoctorLoginWebView.as_view()),
+    path("login/personal/", PersonalLoginWebView.as_view()),
     path("login/mob/", LoginMobileView.as_view()),
-    path("login/office-manager/", OfficeManagerLoginView.as_view()),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
     path("refresh/", TokenRefreshView.as_view()),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
