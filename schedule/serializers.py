@@ -2,6 +2,7 @@ import datetime
 
 from rest_framework import serializers
 
+from users.models import Patient, Doctor
 from .models import (
     Schedule,
     Appointment,
@@ -49,6 +50,38 @@ class AppointmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AppointmentCreateByPatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
+        exclude = ['doctor', 'patient']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        patient = Patient.objects.get(id=user.pk)
+        doctor = patient.doctor_field
+        validated_data['patient'] = patient
+        validated_data['doctor'] = doctor
+        return Appointment.objects.create(**validated_data)
+
+
+class AppointmentCreateByDoctorSerializer(AppointmentSerializer):
+    class Meta:
+        model = Appointment
+        exclude = ['doctor']
+
+    def create(self, validated_data):
+        doctor = self.context['request'].user.pk
+        validated_data['doctor'] = Doctor.objects.get(id=doctor)
+        return Appointment.objects.create(**validated_data)
+
+    def validate_patient(self, patient):
+        doctor = self.context['request'].user.pk
+        if doctor == Patient.objects.get(id=patient.id).doctor_field.pk:
+            return patient
+        else:
+            raise serializers.ValidationError("Это не ваш пациент")
+
+
 class AppointmentForBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
@@ -60,21 +93,21 @@ class AppointmentForBookingSerializer(serializers.ModelSerializer):
         return value
 
 
-class AppointmentListSerializer(AppointmentSerializer):
-    doctor = serializers.StringRelatedField()
-    patient = serializers.StringRelatedField()
-    time_slots = serializers.StringRelatedField()
-
-
 class AppointmentGetTimesSerializer(serializers.ModelSerializer):
     time_slots = TimeSlotsSerializer()
 
     class Meta:
         model = Appointment
-        fields = ['time_slots']
+        fields = ['time_slots', 'patient']
 
 
 class HolidaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Holidays
         fields = '__all__'
+
+
+class AppointmentOfDoctorForWeekSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
+        fields = ['doctor', 'date']
