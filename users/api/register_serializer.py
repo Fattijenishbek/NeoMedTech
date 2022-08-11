@@ -175,9 +175,6 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        print(validated_data)
-        if validated_data['email'] is None:
-            raise serializers.ValidationError('asdfsad')
         password = validated_data.pop('password')
         user = Doctor(**validated_data)
         user.set_password(password)
