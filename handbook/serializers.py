@@ -3,6 +3,7 @@ import datetime
 
 from rest_framework import serializers
 
+from users.models import Patient
 from .models import Todo, Essentials, Article, Handbook, FAQ
 
 
@@ -36,7 +37,14 @@ class HandBookSerializer(serializers.ModelSerializer):
         exclude = ['id']
 
     def get_dates_of_advices(self, obj):
-        today = datetime.date.today()
+        user = self.context['request'].user
+        if user.user_type != 'patient':
+            return None
+
+        patient = Patient.objects.get(id=user.pk)
+        if patient.date_of_pregnancy is None:
+            return None
+        today = patient.date_of_pregnancy + timedelta(weeks=obj.week-1)
         list_of_month = [
             'января',
             'февраля',
