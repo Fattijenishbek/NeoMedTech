@@ -17,7 +17,6 @@ from .serializers import (
 )
 from users.permissions import (
     IsSuperUserOrOfficeManager,
-    IsSuperUserOrOfficeManagerOrDoctor,
 )
 
 
@@ -49,13 +48,6 @@ class CheckListView(viewsets.ModelViewSet):
     queryset = CheckList.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ['patient', 'month']
-
-    def get_queryset(self):
-        queryset = CheckList.objects.all()
-        patient = self.request.query_params.get('patient', None)
-        if patient:
-            queryset = queryset.filter(patient_id=int(patient))
-        return queryset
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
