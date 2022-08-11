@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .models import Handbook, Todo, Essentials, Article, FAQ
 from .serializers import (
     HandBookSerializer,
@@ -18,7 +18,7 @@ from users.permissions import (
 class HandBookViewSet(viewsets.ModelViewSet):
     serializer_class = HandBookSerializer
     queryset = Handbook.objects.all()
-    permission_classes = (IsSuperUserOrOfficeManager,)
+    permission_classes = (IsAuthenticated, IsSuperUserOrOfficeManager,)
     lookup_field = 'week'
 
 
