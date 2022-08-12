@@ -1,7 +1,11 @@
+from rest_framework import serializers
 from medtech import settings
 from rest_auth.serializers import PasswordResetSerializer as _PasswordResetSerializer
+from users.models import User
+
 
 class PasswordResetSerializer(_PasswordResetSerializer):
+
     def save(self):
         request = self.context.get('request')
         opts = {
@@ -13,3 +17,14 @@ class PasswordResetSerializer(_PasswordResetSerializer):
             'request': request
         }
         self.reset_form.save(**opts)
+
+    def validate_email(self, value):
+        # Create PasswordResetForm with the serializer
+        self.reset_form = self.password_reset_form_class(data=self.initial_data)
+        if not self.reset_form.is_valid():
+            raise serializers.ValidationError(_('Error'))
+
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('Invalid e-mail address')
+
+        return value

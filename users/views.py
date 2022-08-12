@@ -2,11 +2,15 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, status, viewsets
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 import datetime
-from checklist.models import CheckList, CheckListTemplate, Answer
+from checklist.models import (
+    CheckList,
+    CheckListTemplate,
+    Answer,
+)
 from checklist.serializers import CheckListTemplateListSerializer
 from .models import OfficeManager, Patient, Doctor, User
 
@@ -43,13 +47,15 @@ sensitive_post_parameters_m = method_decorator(
 class RegisterOfficeManagerView(generics.CreateAPIView):
     serializer_class = RegisterOfficeManagerSerializer
     queryset = OfficeManager.objects.all()
-    permission_classes = (IsAuthenticated, IsSuperUser,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUser,)
 
 
 class RegisterPatientView(generics.CreateAPIView):
     serializer_class = RegisterPatientSerializer
     queryset = Patient.objects.all()
-    permission_classes = (IsSuperUserOrOfficeManagerOrDoctor,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManagerOrDoctor,)
 
     def create(self, request, *args, **kwargs):
         serializer = RegisterPatientSerializer(data=request.data)
@@ -74,7 +80,8 @@ class RegisterPatientView(generics.CreateAPIView):
 class RegisterDoctorView(generics.CreateAPIView):
     serializer_class = RegisterDoctorSerializer
     queryset = Doctor.objects.all()
-    permission_classes = (IsAuthenticated, IsSuperUserOrOfficeManager,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
 
 class PersonalLoginWebView(generics.GenericAPIView):
@@ -117,7 +124,6 @@ class PersonalLoginWebView(generics.GenericAPIView):
         )
 
 
-
 class LoginMobileView(generics.GenericAPIView):
     serializer_class = PatientLoginMobileSerializer
     permission_classes = (AllowAny,)
@@ -152,12 +158,16 @@ class OfficeManagerViewSet(viewsets.ModelViewSet):
     queryset = OfficeManager.objects.all()
     serializer_class = OfficeManagerSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
 
 class DoctorViewSet(viewsets.ModelViewSet):
     queryset = Doctor.objects.all()
     serializer_class = DoctorSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -169,6 +179,8 @@ class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -180,3 +192,5 @@ class AdminViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_superuser=True)
     serializer_class = AdminSerializer
     http_method_names = ['get', 'put', 'patch', 'delete']
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)

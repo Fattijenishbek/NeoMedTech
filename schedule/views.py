@@ -2,7 +2,9 @@ import itertools
 from datetime import datetime, timedelta
 
 from rest_framework import viewsets, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 
 from .models import (
@@ -14,10 +16,13 @@ from .serializers import (
     ScheduleSerializer,
     ScheduleListSerializer,
     AppointmentCreateByPatientSerializer,
-    TimeSlotsSerializer, AppointmentForBookingSerializer,
+    TimeSlotsSerializer,
+    AppointmentForBookingSerializer,
     AppointmentGetTimesSerializer,
     HolidaySerializer,
-    ScheduleForBookingSerializer, AppointmentSerializer, AppointmentCreateByDoctorSerializer,
+    ScheduleForBookingSerializer,
+    AppointmentSerializer,
+    AppointmentCreateByDoctorSerializer,
     AppointmentOfDoctorForWeekSerializer,
 )
 from users.permissions import (
@@ -30,7 +35,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleSerializer
     queryset = Schedule.objects.all()
     lookup_field = 'doctor'
-    permission_classes = (IsSuperUserOrOfficeManager,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -41,7 +47,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 class GetFreeTimeViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentForBookingSerializer
     queryset = Appointment.objects.all()
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
     http_method_names = ['post']
 
     def create(self, request, *args, **kwargs):
@@ -78,13 +85,15 @@ class GetFreeTimeViewSet(viewsets.ModelViewSet):
 class TimeSlotsView(viewsets.ModelViewSet):
     serializer_class = TimeSlotsSerializer
     queryset = TimeSlots.objects.all()
-    permission_classes = (IsSuperUserOrOfficeManager,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
     queryset = Appointment.objects.all()
-    permission_classes = (IsAuthenticated, IsPatientOrIsDoctor,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsPatientOrIsDoctor,)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -98,14 +107,16 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 class HolidayViewSet(viewsets.ModelViewSet):
     serializer_class = HolidaySerializer
     queryset = Holidays.objects.all()
-    permission_classes = (IsAuthenticated, IsSuperUserOrOfficeManager,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
 
 class AppointmentOfDoctorForWeekViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentOfDoctorForWeekSerializer
     queryset = Appointment.objects.all()
-    permission_classes = (AllowAny,)
     http_method_names = ['post']
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsSuperUserOrOfficeManager,)
 
     def create(self, request, *args, **kwargs):
         appointment_serializer = AppointmentOfDoctorForWeekSerializer(data=request.data)
@@ -145,5 +156,3 @@ class AppointmentOfDoctorForWeekViewSet(viewsets.ModelViewSet):
                 monday += timedelta(days=1)
             return Response(response, status=status.HTTP_200_OK)
         return Response(appointment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
