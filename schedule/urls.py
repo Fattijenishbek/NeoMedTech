@@ -7,7 +7,8 @@ from .views import (
     TimeSlotsView,
     GetFreeTimeViewSet,
     HolidayViewSet,
-    AppointmentOfDoctorForWeekViewSet
+    AppointmentOfDoctorForWeekViewSet,
+    GetDoctorScheduleForOneDayViewSet,
 )
 
 schedule_router = DefaultRouter()
@@ -18,6 +19,8 @@ schedule_router.register(r'time-slots', TimeSlotsView, basename='time-slots')
 schedule_router.register(r'get-free-time', GetFreeTimeViewSet, basename='get-free-time')
 schedule_router.register(r'schedule-with-appointment', AppointmentOfDoctorForWeekViewSet,
                          basename='schedule-with-appointment')
+schedule_router.register(r'get-doctors-schedule-for-one-day', GetDoctorScheduleForOneDayViewSet,
+                         basename='get-doctors-schedule-for-one-day')
 schedule_router.register(r'holidays', HolidayViewSet, basename='holidays')
 urlpatterns = [
     path('', include(schedule_router.urls))
