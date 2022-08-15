@@ -1,7 +1,5 @@
-import datetime
-
 from rest_framework import serializers
-
+from users.api.custom_funcs import validate_for_appointment
 from users.models import Patient, Doctor
 from .models import (
     Schedule,
@@ -49,6 +47,16 @@ class AppointmentSerializer(serializers.ModelSerializer):
         model = Appointment
         fields = '__all__'
 
+    def validate(self, data):
+        return validate_for_appointment(data=data)
+
+    def validate_patient(self, patient):
+        doctor = self.context['request'].data['doctor']
+        if int(doctor) == patient.doctor_field.pk:
+            return patient
+        else:
+            raise serializers.ValidationError("Это не ваш пациент")
+
 
 class AppointmentCreateByPatientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,6 +71,9 @@ class AppointmentCreateByPatientSerializer(serializers.ModelSerializer):
         validated_data['doctor'] = doctor
         return Appointment.objects.create(**validated_data)
 
+    def validate(self, attrs):
+        return validate_for_appointment(attrs)
+
 
 class AppointmentCreateByDoctorSerializer(AppointmentSerializer):
     class Meta:
@@ -76,10 +87,13 @@ class AppointmentCreateByDoctorSerializer(AppointmentSerializer):
 
     def validate_patient(self, patient):
         doctor = self.context['request'].user.pk
-        if doctor == Patient.objects.get(id=patient.id).doctor_field.pk:
+        if doctor == patient.doctor_field.pk:
             return patient
         else:
             raise serializers.ValidationError("Это не ваш пациент")
+
+    def validate(self, attrs):
+        return validate_for_appointment(attrs)
 
 
 class AppointmentForBookingSerializer(serializers.ModelSerializer):
@@ -87,14 +101,18 @@ class AppointmentForBookingSerializer(serializers.ModelSerializer):
         model = Appointment
         fields = ['doctor', 'date']
 
-    def validate_date(self, value):
-        if value < datetime.date.today():
-            raise serializers.ValidationError('This day is already in the past')
-        return value
+
+class PatientAppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['id',
+                  'first_name',
+                  'last_name']
 
 
 class AppointmentGetTimesSerializer(serializers.ModelSerializer):
     time_slots = TimeSlotsSerializer()
+    patient = PatientAppointmentSerializer()
 
     class Meta:
         model = Appointment
@@ -111,3 +129,61 @@ class AppointmentOfDoctorForWeekSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = ['doctor', 'date']
+
+
+class PatientForOneDayScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['id',
+                  'first_name',
+                  'last_name',
+                  'phone']
+
+
+class AppointmentForOneDayScheduleSerializer(serializers.ModelSerializer):
+    patient = PatientForOneDayScheduleSerializer()
+    time_slots = TimeSlotsSerializer()
+
+    class Meta:
+        model = Appointment
+        fields = ['id',
+                  'date',
+                  'patient',
+                  'time_slots']
+
+
+class GetDoctorScheduleForOneDaySerializer(serializers.ModelSerializer):
+    appointment = serializers.SerializerMethodField()
+    date = serializers.DateField(write_only=True)
+
+    class Meta:
+        model = Doctor
+        fields = ['id',
+                  'first_name',
+                  'last_name',
+                  'appointment',
+                  'date']
+        read_only_fields = ['id',
+                            'first_name',
+                            'last_name',
+                            'appointment']
+
+    def get_appointment(self, obj):
+        date = self.initial_data['date']
+        appointment = Appointment.objects.filter(date=date).order_by('time_slots_id')
+        serializer = AppointmentForOneDayScheduleSerializer(instance=appointment, many=True)
+        return serializer.data
+
+
+class DatePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Doctor
+        fields = ['id',
+                  'first_name',
+                  'last_name',
+                  'appointment',
+                  'date']
+        read_only_fields = ['id',
+                            'first_name',
+                            'last_name',
+                            'appointment']
