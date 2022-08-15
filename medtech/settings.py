@@ -157,6 +157,7 @@ REST_FRAMEWORK = {
     ],
     'DATETIME_FORMAT': '%d.%m.%Y',
     'DATE_FORMAT': '%d.%m.%Y',
+    'TIME_FORMAT': '%H:%M',
 }
 REST_AUTH_SERIALIZERS = {
     'PASSWORD_RESET_SERIALIZER':
