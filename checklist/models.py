@@ -6,15 +6,14 @@ class CheckList(models.Model):
     MONTH_CHOICES = [
         (i, i) for i in range(1, 10)
     ]
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
     month = models.SmallIntegerField(choices=MONTH_CHOICES, null=True)
     recommendations = models.TextField(blank=True)
-    template = models.ForeignKey('CheckListTemplate', on_delete=models.SET_NULL, null=True)
+    template = models.ForeignKey('CheckListTemplate', on_delete=models.PROTECT)
+    is_archive = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Month: {self.month} ' \
-               f'Doctor: {self.doctor} ' \
                f'Patient: {self.patient}'
 
 
@@ -39,17 +38,18 @@ class Question(models.Model):
 
 class Answer(models.Model):
     name = models.TextField(blank=True)
-    is_ok = models.BooleanField(default=False)
-    question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True, related_name='answer')
-    check_list = models.ForeignKey(CheckList, on_delete=models.SET_NULL, null=True, related_name='answer')
+    is_ok = models.BooleanField(default=True)
+    question = models.ForeignKey(Question, on_delete=models.PROTECT, related_name='answer')
+    check_list = models.ForeignKey(CheckList, on_delete=models.PROTECT, related_name='answer')
 
     def __str__(self):
         return f'{self.name} {self.question.name}'
 
 
 class MedCard(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    information = models.JSONField()
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
+    information = models.JSONField(null=True)
+    is_archive = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.patient}'
