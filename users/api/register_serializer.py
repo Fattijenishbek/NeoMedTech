@@ -1,7 +1,6 @@
-from django.core import exceptions
-import django.contrib.auth.password_validation as validators
 from rest_framework import serializers
 from users.models import OfficeManager, Patient, Doctor
+from .custom_funcs import validate_phone, validate_email, create, validate, validate_inn
 
 
 class RegisterOfficeManagerSerializer(serializers.ModelSerializer):
@@ -12,6 +11,7 @@ class RegisterOfficeManagerSerializer(serializers.ModelSerializer):
         help_text='Leave empty if no change needed',
         style={'input_type': 'password', 'placeholder': 'Password'}
     )
+
     class Meta:
         model = OfficeManager
         fields = [
@@ -24,52 +24,24 @@ class RegisterOfficeManagerSerializer(serializers.ModelSerializer):
             'address',
             'phone',
             'user_type',
-                  ]
+        ]
 
     def validate(self, data):
-        # here data has all the fields which have validated values
-        # so we can create a User instance out of it
-        user = OfficeManager(**data)
-        # get the password from the data
-        password = data.get('password')
-        errors = dict()
-        try:
-            # validate the password and catch the exception
-            validators.validate_password(password=password, user=user)
-
-        # the exception raised here is different than serializers.ValidationError
-        except exceptions.ValidationError as e:
-            errors['password'] = list(e.messages)
-
-        if errors:
-            raise serializers.ValidationError(errors)
-
-        return super(RegisterOfficeManagerSerializer, self).validate(data)
+        return validate(self, data, OfficeManager, RegisterOfficeManagerSerializer)
 
     def validate_email(self, value):
-        if value is None:
-            raise serializers.ValidationError('Это поле не может быть пустым.')
-        return value
+        return validate_email(value)
 
     def validate_phone(self, value):
-        if not value[1:].isnumeric():
-            raise serializers.ValidationError('Phone must be numeric symbols')
-        if value[:4] != '+996':
-            raise serializers.ValidationError('Phone number should start with +996 ')
-        elif len(value) != 13:
-            raise serializers.ValidationError("Phone number must be 13 characters long")
-        return value
+        return validate_phone(value)
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = OfficeManager(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
+        return create(validated_data, OfficeManager)
 
 
 class RegisterPatientSerializer(serializers.ModelSerializer):
     user_type = serializers.HiddenField(default='patient')
+
     class Meta:
         model = Patient
         fields = ['first_name',
@@ -90,18 +62,10 @@ class RegisterPatientSerializer(serializers.ModelSerializer):
         read_only_fields = ['is_active']
 
     def validate_phone(self, value):
-        if not value[1:].isnumeric():
-            raise serializers.ValidationError('Phone must be numeric symbols')
-        if value[:4] != '+996':
-            raise serializers.ValidationError('Phone number should start with +996 ')
-        elif len(value) != 13:
-            raise serializers.ValidationError("Phone number must be 13 characters long")
-        return value
+        return validate_phone(value)
 
     def validate_inn(self, value):
-        if not value.isnumeric():
-            raise serializers.ValidationError('INN must be numeric symbols')
-        return value
+        return validate_inn(value)
 
     def create(self, validated_data):
         user = Patient(**validated_data)
@@ -138,45 +102,13 @@ class RegisterDoctorSerializer(serializers.ModelSerializer):
                   ]
 
     def validate(self, data):
-        # here data has all the fields which have validated values
-        # so we can create a User instance out of it
-        # print(data)
-        user = Doctor(**data)
-
-        # get the password from the data
-        password = data.get('password')
-
-        errors = dict()
-        try:
-            # validate the password and catch the exception
-            validators.validate_password(password=password, user=user)
-
-        # the exception raised here is different than serializers.ValidationError
-        except exceptions.ValidationError as e:
-            errors['password'] = list(e.messages)
-
-        if errors:
-            raise serializers.ValidationError(errors)
-
-        return super(RegisterDoctorSerializer, self).validate(data)
+        return validate(self, data, Doctor, RegisterDoctorSerializer)
 
     def validate_phone(self, value):
-        if not value[1:].isnumeric():
-            raise serializers.ValidationError('Phone must be numeric symbols')
-        if value[:4] != '+996':
-            raise serializers.ValidationError('Phone number should start with +996 ')
-        elif len(value) != 13:
-            raise serializers.ValidationError("Phone number must be 13 characters long")
-        return value
+        return validate_phone(value)
 
     def validate_email(self, value):
-        if value is None:
-            raise serializers.ValidationError('Это поле не может быть пустым.')
-        return value
+        return validate_email(value)
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = Doctor(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
+        return create(validated_data, Doctor)
