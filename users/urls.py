@@ -16,7 +16,7 @@ from .views import (
     PatientViewSet,
     RegisterDoctorView,
     PersonalLoginWebView,
-    LoginMobileView,
+    LoginMobileView, ArchivePatientViewSet,
 )
 
 user_router = DefaultRouter()
@@ -24,6 +24,7 @@ user_router.register(r'admins', AdminViewSet, basename='admins')
 user_router.register(r'office-manager', OfficeManagerViewSet, basename='office-manager')
 user_router.register(r'doctor', DoctorViewSet, basename='doctor')
 user_router.register(r'patient', PatientViewSet, basename='patient')
+user_router.register(r'patient-archive', ArchivePatientViewSet, basename='patient-archive')
 
 urlpatterns = [
     path("register/doctor/", RegisterDoctorView.as_view()),

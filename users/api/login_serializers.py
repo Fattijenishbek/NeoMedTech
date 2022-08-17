@@ -19,7 +19,6 @@ class PersonalLoginWebSerializer(serializers.ModelSerializer):
 
 
 class PatientLoginMobileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Patient
         fields = ["phone"]

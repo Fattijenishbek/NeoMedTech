@@ -12,7 +12,7 @@ class TimeSlots(models.Model):
 
 
 class Schedule(models.Model):
-    doctor = models.OneToOneField(Doctor, on_delete=models.CASCADE)
+    doctor = models.OneToOneField(Doctor, on_delete=models.PROTECT, related_name='schedule')
     monday = models.ManyToManyField(TimeSlots, related_name='monday', blank=True)
     tuesday = models.ManyToManyField(TimeSlots, related_name='tuesday', blank=True)
     wednesday = models.ManyToManyField(TimeSlots, related_name='wednesday', blank=True)
@@ -29,16 +29,16 @@ class Appointment(models.Model):
     record = models.TextField(null=True)
     description = models.TextField(null=True)
     date = models.DateField()
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    time_slots = models.ForeignKey(TimeSlots, on_delete=models.CASCADE, related_name='appointment')
+    doctor = models.ForeignKey(Doctor, on_delete=models.PROTECT, related_name='appointment')
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
+    time_slots = models.ForeignKey(TimeSlots, on_delete=models.PROTECT, related_name='appointment')
 
     def __str__(self):
         return f'{self.doctor} {self.date} {self.patient}'
 
 
 class Holidays(models.Model):
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.PROTECT)
     day = models.DateField()
 
     def __str__(self):

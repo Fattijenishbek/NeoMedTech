@@ -38,9 +38,10 @@ class HandBookSerializer(serializers.ModelSerializer):
 
     def get_dates_of_advices(self, obj):
         user = self.context['request'].user
+        if user.is_anonymous:
+            return None
         if user.user_type != 'patient':
             return None
-
         patient = Patient.objects.get(id=user.pk)
         if patient.date_of_pregnancy is None:
             return None

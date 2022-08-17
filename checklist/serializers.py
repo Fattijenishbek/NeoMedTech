@@ -8,7 +8,9 @@ class MedCardSerializer(serializers.ModelSerializer):
         fields = [
             'patient',
             'information',
+            'is_archive'
         ]
+        read_only_fields = ['is_archive']
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -74,7 +76,6 @@ class TitleCheckListSerializer(serializers.ModelSerializer):
         questions_data = validated_data.pop('question')
         title = Title.objects.create(**validated_data)
         questions = []
-        print(questions_data)
         for question_data in questions_data:
             question_id = question_data.pop('id', None)
             question, _ = Question.objects.get_or_create(id=question_id, defaults=question_data)
@@ -124,13 +125,14 @@ class CheckListListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckList
         fields = ['id',
+                  'is_archive',
                   'month',
-                  'doctor',
                   'patient',
                   'recommendations',
                   'answer',
                   'template',
                   ]
+        read_only_field = ['is_archive']
 
 
 class AnswerInCheckListSerializer(serializers.ModelSerializer):

@@ -9,7 +9,7 @@ from users.models import Patient
 class Todo(models.Model):
     task = models.CharField(max_length=255)
     done = models.BooleanField(default=False)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.task} - {self.patient}'
@@ -43,7 +43,7 @@ class Handbook(models.Model):
 class Essentials(models.Model):
     title = models.CharField(max_length=128)
     done = models.BooleanField(default=False)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.title

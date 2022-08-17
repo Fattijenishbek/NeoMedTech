@@ -2,6 +2,7 @@ from datetime import date, timedelta
 from dateutil import relativedelta
 from rest_framework import serializers
 from users.models import User, Doctor, Patient, OfficeManager
+from .custom_funcs import get_age, validate_inn
 
 
 class PatientListSerializer(serializers.ModelSerializer):
@@ -17,6 +18,7 @@ class PatientListSerializer(serializers.ModelSerializer):
                   'last_name',
                   'birth_date',
                   'age',
+                  'is_active',
                   'image',
                   'address',
                   'phone',
@@ -28,37 +30,27 @@ class PatientListSerializer(serializers.ModelSerializer):
                   'user_type',
                   'doctor_field'
                   ]
+        read_only_fields = ['user_type', 'doctor_field', 'is_active']
 
     def get_age(self, obj):
-        today = date.today()
-        return today.year - obj.birth_date.year - (
-                (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
+        return get_age(obj)
 
-    def validate(self, data):
-        inn = data.get('inn')
-        if len(inn) != 14:
-            raise serializers.ValidationError('Your length of inn should be 14 characters!!!')
-        return data
+    def validate_inn(self, value):
+        return validate_inn(value)
 
     def get_week_of_pregnancy(self, obj):
-        if obj.date_of_pregnancy:
-            days = abs(obj.date_of_pregnancy - date.today()).days
-            return days // 7 + 1
-        return None
+        days = abs(obj.date_of_pregnancy - date.today()).days
+        return days // 7 + 1
 
     def get_month_of_pregnancy(self, obj):
-        if obj.date_of_pregnancy:
-            pregnancy_date = obj.date_of_pregnancy
-            today = date.today()
-            delta = relativedelta.relativedelta(today, pregnancy_date)
-            return delta.months + delta.years * 12
-        return None
+        pregnancy_date = obj.date_of_pregnancy
+        today = date.today()
+        delta = relativedelta.relativedelta(today, pregnancy_date)
+        return (delta.months + delta.years * 12) + 1
 
     def get_approximate_date_of_pregnancy(self, obj):
-        if obj.date_of_pregnancy:
-            res = obj.date_of_pregnancy + timedelta(days=270)
-            return res.strftime('%d.%m.%Y')
-        return None
+        res = obj.date_of_pregnancy + timedelta(days=270)
+        return res.strftime('%d.%m.%Y')
 
 
 class DoctorListSerializer(serializers.ModelSerializer):
@@ -85,21 +77,25 @@ class DoctorListSerializer(serializers.ModelSerializer):
                   ]
 
     def get_age(self, obj):
-        today = date.today()
-        return today.year - obj.birth_date.year - (
-                (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
+        return get_age(obj)
 
 
 class PatientSerializer(PatientListSerializer):
-    doctor_field = DoctorListSerializer()
+    doctor_field = DoctorListSerializer(read_only=True)
 
 
 class DoctorSerializer(DoctorListSerializer):
-    patient = PatientListSerializer(many=True, read_only=True)
+    patient = serializers.SerializerMethodField()
+
+    def get_patient(self, obj):
+        patient = Patient.objects.filter(is_active=True, doctor_field=obj)
+        serializer = PatientListSerializer(instance=patient, many=True)
+        return serializer.data
 
 
 class OfficeManagerSerializer(serializers.ModelSerializer):
     age = serializers.SerializerMethodField()
+
     class Meta:
         model = OfficeManager
         fields = ['id',
@@ -115,9 +111,7 @@ class OfficeManagerSerializer(serializers.ModelSerializer):
                   ]
 
     def get_age(self, obj):
-        today = date.today()
-        return today.year - obj.birth_date.year - (
-                (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day))
+        return get_age(obj)
 
 
 class AdminSerializer(serializers.ModelSerializer):
