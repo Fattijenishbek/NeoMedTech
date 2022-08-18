@@ -27,8 +27,6 @@ def send_notification(request):
             to='whatsapp:+{}'.format(user_whatsapp_number)
         )
 
-        print(user_whatsapp_number)
-        print(message.sid)
         return HttpResponse('Great! Expect a message...')
 
     return render(request, 'phone.html')

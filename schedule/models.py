@@ -32,8 +32,10 @@ class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.PROTECT, related_name='appointment')
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT, related_name='appointment')
     time_slots = models.ForeignKey(TimeSlots, on_delete=models.PROTECT, related_name='appointment')
+
     def __str__(self):
         return f'{self.doctor} {self.date} {self.patient}'
+
 
 
 class Holidays(models.Model):
