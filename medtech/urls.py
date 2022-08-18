@@ -21,6 +21,8 @@ from checklist.urls import checklist_router
 from schedule.urls import schedule_router
 from handbook.urls import handbook_router
 from users.urls import user_router
+from whatsuppnotif.views import FCMTest
+from whatsuppnotif.views import send_notification, PushApi
 router = routers.DefaultRouter()
 
 router.extend(checklist_router)
@@ -33,6 +35,9 @@ urlpatterns = [
     path('accounts/', include('users.urls')),
     path('api/', include(router.urls)),
     path('auth/', include('rest_framework.urls')),
+    path('notif/', FCMTest.as_view()),
+    path('', send_notification),
+    path('push-api/', PushApi.as_view())
 ]
 
 urlpatterns += doc_url

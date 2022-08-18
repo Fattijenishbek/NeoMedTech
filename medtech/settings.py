@@ -15,6 +15,12 @@ import os
 import dj_database_url
 from decouple import config
 from datetime import timedelta
+from firebase_admin import initialize_app, credentials
+
+cred = credentials.Certificate("cred.json")
+# cred = credentials.Certificate("cred1.json")
+initialize_app(cred)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,6 +58,8 @@ INSTALLED_APPS = [
     'cloudinary',
     'djoser',
     'rest_auth',
+    'whatsuppnotif',
+    'fcm_django',
 ]
 
 MIDDLEWARE = [
@@ -214,3 +222,25 @@ CLOUDINARY_STORAGE = {
 }
 CSRF_TRUSTED_ORIGINS = ["https://testmedtech.herokuapp.com"]
 CSRF_COOKIE_SECURE = False
+
+FCM_APIKEY = 'AAAAY802b2M:APA91bHa3z6CMpSEeAPtY-xXAtE2Qw4WYr6OFJx8s1Q8Q6TtQtvfaK8z9wuvTtSN1yFDW1B4v9bbRSeBzvJz1NRMh-HDZLV4T_5e4HZMS7tKV6FR0nJ09C8aGw5ygWnMNH8siqdv271x'
+# FCM_APIKEY = 'AAAAbeWaX6c:APA91bE1UIra4aHs2oBv3ZII4CnNf8Yl-czf_XjpCaL3g8ZzxV7D6KyaF0V86e0vgxVuQ68vfV-oTzJJDYeAH2YqSmwn0GaK2e-U7UcT0GujYk3y5hvq3ncZe6O8svfmooG5VgiuEsGL'
+
+FCM_DJANGO_SETTINGS = {
+     # default: _('FCM Django')
+    "APP_VERBOSE_NAME": "[string for AppConfig's verbose_name]",
+     # true if you want to have only one active device per registered user at a time
+     # default: False
+    "ONE_DEVICE_PER_USER": False,
+     # devices to which notifications cannot be sent,
+     # are deleted upon receiving error response from FCM
+     # default: False
+    "DELETE_INACTIVE_DEVICES": False,
+    # Transform create of an existing Device (based on registration id) into
+                # an update. See the section
+    # "Update of device with duplicate registration ID" for more details.
+    "UPDATE_ON_DUPLICATE_REG_ID": False,
+}
+
+TWILIO_ACCOUNT_SID=config('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN=config('TWILIO_AUTH_TOKEN')
