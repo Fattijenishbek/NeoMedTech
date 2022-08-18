@@ -33,8 +33,10 @@ class SuperUser(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, null=True)
     email = models.EmailField(unique=True, null=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     user_type = models.CharField(max_length=255, null=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -58,8 +60,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserForInheritance(User):
     image = models.TextField(null=True, blank=True)
     birth_date = models.DateField()
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     phone = models.CharField(max_length=13, unique=True)
 
@@ -75,6 +75,7 @@ class OfficeManager(UserForInheritance):
 
 
 class Patient(UserForInheritance):
+    image = models.ImageField(blank=True, null=True, upload_to='images/')
     date_of_pregnancy = models.DateField(auto_now_add=False)
     inn = models.CharField(max_length=14, unique=True)
     doctor_field = models.ForeignKey('Doctor', on_delete=models.PROTECT, related_name='patient')

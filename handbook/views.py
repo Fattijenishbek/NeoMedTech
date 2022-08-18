@@ -44,7 +44,7 @@ class EssentialsViewSet(viewsets.ModelViewSet):
 
 class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
-    permission_classes = (IsSuperUserOrOfficeManager,)
+    # permission_classes = (IsSuperUserOrOfficeManager,)
     queryset = Article.objects.all()
     # permission_classes = (IsAuthenticatedOrReadOnly,
     #                       IsSuperUserOrOfficeManager,)

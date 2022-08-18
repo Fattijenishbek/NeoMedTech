@@ -1,3 +1,5 @@
+from django.db.models import DateTimeField
+from django.db.models.functions import Trunc
 from rest_framework import serializers
 from users.api.custom_funcs import validate_for_appointment
 from users.models import Patient, Doctor
@@ -48,7 +50,8 @@ class AppointmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, data):
-        return validate_for_appointment(data=data)
+        doctor = data['doctor']
+        return validate_for_appointment(data=data, doctor=doctor)
 
     def validate_patient(self, patient):
         doctor = self.context['request'].data['doctor']
@@ -64,15 +67,15 @@ class AppointmentCreateByPatientSerializer(serializers.ModelSerializer):
         exclude = ['doctor', 'patient']
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        patient = Patient.objects.get(id=user.pk)
-        doctor = patient.doctor_field
-        validated_data['patient'] = patient
-        validated_data['doctor'] = doctor
+        validated_data['patient'] = self.patient
+        validated_data['doctor'] = self.doctor
         return Appointment.objects.create(**validated_data)
 
     def validate(self, attrs):
-        return validate_for_appointment(attrs)
+        user = self.context['request'].user
+        self.patient = Patient.objects.get(id=user.pk)
+        self.doctor = self.patient.doctor_field
+        return validate_for_appointment(attrs, self.doctor)
 
 
 class AppointmentCreateByDoctorSerializer(AppointmentSerializer):
@@ -81,19 +84,18 @@ class AppointmentCreateByDoctorSerializer(AppointmentSerializer):
         exclude = ['doctor']
 
     def create(self, validated_data):
-        doctor = self.context['request'].user.pk
-        validated_data['doctor'] = Doctor.objects.get(id=doctor)
+        validated_data['doctor'] = Doctor.objects.get(id=self.doctor)
         return Appointment.objects.create(**validated_data)
 
     def validate_patient(self, patient):
-        doctor = self.context['request'].user.pk
-        if doctor == patient.doctor_field.pk:
+        self.doctor = self.context['request'].user.pk
+        if self.doctor == patient.doctor_field.pk:
             return patient
         else:
             raise serializers.ValidationError("Это не ваш пациент")
 
     def validate(self, attrs):
-        return validate_for_appointment(attrs)
+        return validate_for_appointment(attrs, self.doctor)
 
 
 class AppointmentForBookingSerializer(serializers.ModelSerializer):
@@ -187,3 +189,23 @@ class DatePostSerializer(serializers.ModelSerializer):
                             'first_name',
                             'last_name',
                             'appointment']
+
+
+class DoctorForVisitHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Doctor
+        fields = ['id',
+                  'first_name',
+                  'last_name']
+
+
+class AppointmentForVisitHistorySerializer(serializers.ModelSerializer):
+    doctor = serializers.StringRelatedField()
+    time_slots = TimeSlotsSerializer()
+
+    class Meta:
+        model = Appointment
+        fields = ['id',
+                  'date',
+                  'doctor',
+                  'time_slots']

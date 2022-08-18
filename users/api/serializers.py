@@ -1,6 +1,8 @@
 from datetime import date, timedelta
 from dateutil import relativedelta
 from rest_framework import serializers
+
+from schedule.serializers import AppointmentForVisitHistorySerializer
 from users.models import User, Doctor, Patient, OfficeManager
 from .custom_funcs import get_age, validate_inn
 
@@ -10,7 +12,7 @@ class PatientListSerializer(serializers.ModelSerializer):
     month_of_pregnancy = serializers.SerializerMethodField()
     approximate_date_of_pregnancy = serializers.SerializerMethodField()
     age = serializers.SerializerMethodField()
-
+    appointment = AppointmentForVisitHistorySerializer(many=True, read_only=True)
     class Meta:
         model = Patient
         fields = ['id',
@@ -24,6 +26,7 @@ class PatientListSerializer(serializers.ModelSerializer):
                   'phone',
                   'date_of_pregnancy',
                   'inn',
+                  'appointment',
                   'week_of_pregnancy',
                   'month_of_pregnancy',
                   'approximate_date_of_pregnancy',
@@ -67,6 +70,7 @@ class DoctorListSerializer(serializers.ModelSerializer):
                   'address',
                   'phone',
                   'email',
+                  'is_active',
                   'user_type',
                   'resign',
                   'education',
@@ -75,6 +79,7 @@ class DoctorListSerializer(serializers.ModelSerializer):
                   'achievements',
                   'patient',
                   ]
+        read_only_fields = ['user_type', 'is_active']
 
     def get_age(self, obj):
         return get_age(obj)
@@ -118,6 +123,9 @@ class AdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id',
-                  'username',
+                  'first_name',
+                  'last_name',
+                  'user_type',
                   'email',
                   ]
+    read_only_fields = ['user_type']

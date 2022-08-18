@@ -60,7 +60,7 @@ def validate_inn(value):
     return value
 
 
-def get_goken(user):
+def get_token(user):
     refresh = RefreshToken.for_user(user)
     expires_in = refresh.access_token.lifetime.total_seconds()
     expires_day = datetime.datetime.now() + datetime.timedelta(seconds=expires_in)
@@ -77,9 +77,8 @@ def get_goken(user):
     )
 
 
-def validate_for_appointment(data):
+def validate_for_appointment(data, doctor):
     date = data['date']
-    doctor = data['doctor']
     time_slots = data['time_slots']
     week_day = date.strftime('%A').lower()
     if datetime.date.today() > date:
