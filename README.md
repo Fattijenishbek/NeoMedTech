@@ -1,2 +1,2 @@
 # NeoMedTech
-[REST API](https://neomedtech.herokuapp.com/api/)
+[REST API of the project](https://neomedtech.herokuapp.com/api/)
